@@ -13,20 +13,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <!-- PolymerElement Components -->
 <link rel="import" href="../bower_components/polymer/polymer.html" />
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html" />
-<link rel="import" href="../bower_components/mapbox-gl/mapbox-gl.html" />
+<link rel="import" href="../bower_components/px-map-gl/px-map-gl.html" />
 <link rel="import" href="shared-styles.html">
 
 <!-- Predix UI Components -->
+<!--custom -->
 <!--<link rel="import" href="../components/px-map/px-map.html" />
 <link rel="import" href="../components/px-map/px-map-tile-layer.html" />
 <link rel="import" href="../components/px-map/px-map-control-zoom.html" />
 <link rel="import" href="../components/px-map/px-map-layer-geojson.html" />-->
 
+<!-- custom -->
+
 <!-- Theme/CSS -->
 <link rel="import" href="../bower_components/px-theme/px-theme-styles.html">
 
 
-<dom-module id="my-view1">
+<dom-module id="fsd-buildings">
   <template>
     <style include="shared-styles">
       /*:host {
@@ -65,56 +68,62 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <h1> Show me ... </h1>
     </div>-->
 
-    <div class="card">
+    <div class="card" style="height:600px;width:92%;display:flex">
 
-        <div class="map">
-           <mapbox-gl id="map"
-	    interactive
-	    map="{{map}}"
-	    map-style="mapbox://styles/mapbox/streets-v9"
-	    access-token="pk.eyJ1IjoiYXZlZHkiLCJhIjoiY2l2NDQ1bG9oMDA0aDJ0cWx4ZW50aTJkbiJ9.WPiw3lvIkzQcABAfJj2MBQ"
-	    latitude=32.7157
-	    longitude=-117.1611
-	    zoom=12
-	    pitch=0
-	    bearing=0
-	   ></mapbox-gl>
+        <px-map-gl zoom="12"
+                bearing="0"
+                pitch="0"
+                flex-to-size
+                style="mapbox://styles/mapbox/dark-v9"
+                mgl-token="pk.eyJ1IjoiYXZlZHkiLCJhIjoiY2l2NDQ1bG9oMDA0aDJ0cWx4ZW50aTJkbiJ9.WPiw3lvIkzQcABAfJj2MBQ"
+                lat="32.7157"
+                lng="-117.1611">
 
-       <mapbox-layer
-          map="[[map]]"
-          layer-id="buildings"
-          rendering-type="circle"
-          source="geojsonsrc"
-          color="#009688"
-          opacity=0.7
-          ></mapbox-layer>
+            <px-map-gl-control-nav
+                position="top-left">
+            </px-map-gl-control-nav>
 
-         <geojson-source
-          map="[[map]]"
-          source-id="geojsonsrc"
-          source-data="/src/fac.geojson"></geojson-source>
+            <px-map-gl-control-fullscreen
+                position="top-right">
+            </px-map-gl-control-fullscreen>
+
+            <px-map-gl-control-scale
+                position="bottom-left">
+            </px-map-gl-control-scale>
 
 
-        </div>
+            <px-map-gl-control-geolocate
+                position="bottom-left">
+            </px-map-gl-control-geolocate>
+
+            <px-map-gl-source-geojson
+              id="gjsource"
+              data="{{props.data.value}}">
+            </px-map-gl-source-geojson>
+
+            <px-map-gl-layer-symbol
+              id="gj-symbol-layer-one"
+              icon-image="music-15"
+              icon-size="2"
+              active-feature="{{ activeFeature }}"
+              source="gjsource">
+
+              <px-map-gl-popup-debug
+                show-event="click"
+                title="popupData.activeFeatureProperties elements"
+                description="See full popupData in Console">
+              </px-map-gl-popup-debug>
+            </px-map-gl-layer-symbol>
 
 
-          <!-- leftovers -->
-          <!--<px-map-control-zoom position="bottomright"></px-map-control-zoom>-->
-          <!--<px-map lat="[[mapLat]]" lng="[[mapLng]]" zoom="[[mapZoom]]" flex-to-size>-->
-          <!--<px-map-marker-group name="Requests" data="{{requests}}"></px-map-marker-group>-->
-        <!--<div class="map">
-          <px-map lat="32.727364280927794" lng="-117.16884613037111" zoom="13" flex-to-size>
-          <px-map-tile-layer url="http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"></px-map-tile-layer>
-          <px-map-layer-geojson data="{{requests}}" show-feature-properties></px-map-layer-geojson>
-          </px-map>
-      </div>-->
+        </px-map-gl>
 
     </div>
   </template>
 
   <script>
     Polymer({
-      is: 'my-view1',
+      is: 'fsd-buildings',
       properties: {
         requests: {
             type: Object,
@@ -124,10 +133,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         rawRequests: {
             type: Object,
             observer: '_processRequestsJSON'
-        }
+        },
+
       },
       attached: function() {
-          console.log('hello');
+
+      },
+      _getMap: function() {
+          return this.$.map.get('map');
+      },
+      _mapLoaded: function(e) {
+          console.log('mapLoaded');
+          var map = this._getMap();
+          console.log(map.getLayer('buildings'));
+          console.log(map.isSourceLoaded('geojsonsrc'));
+          /*map.on('click', function(e) {
+              console.log(e);
+          });*/
+
+           map.on('click', 'buildings', function () {
+             map.getCanvas().style.cursor = 'pointer';
+           });
       },
       _processRequestsJSON: function(raw) {
           console.log(raw);
