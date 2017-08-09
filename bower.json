@@ -18,7 +18,10 @@
     "iron-ajax": "^2.0.2",
     "px-map": "^1.5.1",
     "px-theme": "^2.0.4",
-    "mapbox-gl": "^1.0.7"
+    "mapbox-gl": "^1.0.7",
+    "px-data-table": "^4.0.3",
+    "lodash": "^4.17.4",
+    "px-dropdown": "^4.0.4"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"

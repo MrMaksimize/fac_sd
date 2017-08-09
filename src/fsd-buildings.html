@@ -13,7 +13,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <!-- PolymerElement Components -->
 <link rel="import" href="../bower_components/polymer/polymer.html" />
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html" />
+<link rel="import" href="../bower_components/px-dropdown/px-dropdown.html" />
 <link rel="import" href="../bower_components/px-map-gl/px-map-gl.html" />
+<link rel="import" href="../bower_components/px-map-gl/px-map-gl-source-geojson.html" />
+<link rel="import" href="../bower_components/px-map-gl/px-map-gl-layer-symbol.html" />
+<link rel="import" href="../bower_components/px-map-gl/px-map-gl-popup-debug.html" />
+<link rel="import" href="../bower_components/px-map-gl/px-map-gl-control-nav.html" />
+<link rel="import" href="../bower_components/px-map-gl/px-map-gl-control-geolocate.html" />
+<link rel="import" href="../bower_components/px-map-gl/px-map-gl-control-scale.html" />
+<link rel="import" href="../bower_components/px-map-gl/px-map-gl-control-fullscreen.html" />
 <link rel="import" href="shared-styles.html">
 
 <!-- Predix UI Components -->
@@ -45,28 +53,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :root {
         --px-map-icon-info-color: rgb(70,173,0);
       }
-      .map, #map {
-        flex: 1;
-        display: flex;
-        height: 550px;
-        width: 100%;
-      }
     </style>
 
 
-    <!--<iron-ajax
+    <iron-ajax
         id="ajax"
-        url="/src/fac.geojson"
-        last-response="{{rawRequests}}"
+        url="/src/facilities.geojson"
+        last-response="{{ rawBuildings }}"
         handle-as="json"
         debounce-duration="300"
         auto verbose>
-    </iron-ajax>-->
+    </iron-ajax>
 
+    <div class="card" style="width:92%;display:flex">
+	 <px-dropdown
+           items='[[ buildingTypeOptions ]]'
+           sort-mode="key"
+           button-style="bare"
+           display-value="Building Type"
+           disable-clear>
+         </px-dropdown>
 
-    <!--<div class="card">
-        <h1> Show me ... </h1>
-    </div>-->
+    </div>
 
     <div class="card" style="height:600px;width:92%;display:flex">
 
@@ -83,7 +91,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 position="top-left">
             </px-map-gl-control-nav>
 
-            <px-map-gl-control-fullscreen
+
+            <px-map-gl-source-geojson
+              id="fac-buildings"
+              data="{{ buildingData }}">
+            </px-map-gl-source-geojson>
+
+
+            <px-map-gl-layer-symbol
+              id="symbol-one"
+              icon-image="{icon}-15"
+              icon-size="1"
+              active-feature="{{ activeFeature }}"
+              source="fac-buildings">
+
+              <px-map-gl-popup-debug
+                show-event="click"
+                title="popupData.activeFeatureProperties elements"
+                description="See full popupData in Console">
+              </px-map-gl-popup-debug>
+            </px-map-gl-layer-symbol>
+
+
+
+
+            <!--<px-map-gl-control-fullscreen
                 position="top-right">
             </px-map-gl-control-fullscreen>
 
@@ -113,7 +145,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 title="popupData.activeFeatureProperties elements"
                 description="See full popupData in Console">
               </px-map-gl-popup-debug>
-            </px-map-gl-layer-symbol>
+            </px-map-gl-layer-symbol>-->
 
 
         </px-map-gl>
@@ -125,39 +157,110 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     Polymer({
       is: 'fsd-buildings',
       properties: {
-        requests: {
-            type: Object,
-            notify: true,
-            reflectToAttribute: true
+        rawBuildings: {
+	  type: Object,
+          observer: '_processRequestsJSON'
+	},
+        buildingData: {
+	  type: Object,
+          notify: true
         },
-        rawRequests: {
-            type: Object,
-            observer: '_processRequestsJSON'
-        },
-
+	buildingTypeOptions: {
+          type: Array,
+          notify: true,
+          readOnly: true
+        }
       },
       attached: function() {
-
       },
       _getMap: function() {
-          return this.$.map.get('map');
       },
       _mapLoaded: function(e) {
-          console.log('mapLoaded');
-          var map = this._getMap();
-          console.log(map.getLayer('buildings'));
-          console.log(map.isSourceLoaded('geojsonsrc'));
-          /*map.on('click', function(e) {
-              console.log(e);
-          });*/
-
-           map.on('click', 'buildings', function () {
-             map.getCanvas().style.cursor = 'pointer';
-           });
       },
       _processRequestsJSON: function(raw) {
-          console.log(raw);
-          this.set('requests', raw);
+        console.log(raw);
+        const iconMap = {
+	    "Office": "town-hall",
+	    "Public Event Site": "picnic-site",
+	    "Theatre": "theatre",
+	    "Parking Garage": "parking",
+	    "Concessions": "fast-food",
+	    "Recreation Center": "soccer",
+	    "Fire Station": "fire-station",
+	    "Maintenance Building": "warehouse",
+	    "Shop": "shop",
+	    "Blockhouse": "warehouse",
+	    "Guardhouse": "ranger-station",
+	    "Residence": "residential-community",
+	    "Storm Water Pump Station": "industry",
+	    "Warehouse": "warehouse",
+	    "Lifeguard Station": "swimming",
+	    "Retail": "shop",
+	    "Museum": "museum",
+	    "Vehicle/Repair Facility": "car",
+	    "Community Center": "place-of-worship",
+	    "Historical Building": "landmark",
+	    "Store": "shop",
+	    "Yard": "natural",
+	    "Vehicle Facility": "car",
+	    "Storage": "warehouse",
+	    "Tank": "warehouse",
+	    "Event/Break Area": "picnic-site",
+	    "Equipment Room": "",
+	    "Community Service Center": "",
+	    "Comfort Station": "picnic-site",
+	    "Senior Center": "wheelchair",
+	    "Library": "library",
+	    "Swimming Pool": "swimming",
+	    "Recreation Facility": "soccer",
+	    "Athletic Facility": "soccer",
+	    "Cultural Center": "place-of-worship",
+	    "Studio": "building",
+	    "Kiosk": "information",
+	    "Police Storefront": "police",
+	    "Police Station": "police",
+	    "Teen Center": "place-of-worship",
+	    "Boat Center": "ferry",
+	    "Training Area": "college",
+	    "Hanger": "airport",
+	    "Nursery": "florist",
+	    "Laboratory": "pharmacy",
+	    "Real Estate Asset": "building",
+	    "Police Training": "police",
+	    "Fire Training": "fire-station",
+	    "Ranger Station": "ranger-station",
+	    "Skate Park": "skiing",
+	    "Boat Dock": "ferry",
+	    "Youth Center": "playground",
+	    "Locker Room": "soccer",
+	    "Canine Kennels": "dog-park",
+	    "Transit Facility": "bus-15",
+	    "Elevator Building": "entrance",
+	    "Park Shelter": "park-alt1",
+	    "Restroom": "toilet",
+	    "Auditorium": "theatre",
+	    "Trailer": "ice-cream",
+	    "Dump Station": "recycling",
+	    "Leased Facility": "building"
+	};
+
+        const buildingTypes = {};
+
+        raw.features = _.map(raw.features, function(feature) {
+          let buildingType = feature.properties.asset_type;
+
+          feature.properties.icon = iconMap[buildingType]
+
+          if (!buildingTypes[buildingType])
+            buildingTypes[buildingType] = buildingType;
+
+	  return feature;
+
+        });
+        this.buildingData = raw;
+        console.log(buildingTypes);
+        this._setBuildingTypeOptions(_.values(buildingTypes));
+
       }
     });
   </script>
