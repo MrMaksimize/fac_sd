@@ -67,22 +67,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <div class="card" style="width:92%;display:flex">
 	 <px-dropdown
+           id='building-type'
            items='[[ buildingTypeOptions ]]'
            sort-mode="key"
            button-style="bare"
            display-value="Building Type"
-           disable-clear>
+           selected="{{selectedBuildings}}">
          </px-dropdown>
 
     </div>
 
     <div class="card" style="height:600px;width:92%;display:flex">
-
+        <!--style="mapbox://styles/mapbox/cj62n87yx3mvi2rp93sfp2w9z"-->
         <px-map-gl zoom="12"
                 bearing="0"
                 pitch="0"
                 flex-to-size
-                style="mapbox://styles/mapbox/dark-v9"
+                style="mapbox://styles/mapbox/streets-v9"
                 mgl-token="pk.eyJ1IjoiYXZlZHkiLCJhIjoiY2l2NDQ1bG9oMDA0aDJ0cWx4ZW50aTJkbiJ9.WPiw3lvIkzQcABAfJj2MBQ"
                 lat="32.7157"
                 lng="-117.1611">
@@ -98,11 +99,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </px-map-gl-source-geojson>
 
 
+            <!-- filter='["in", "asset_type", "Library"]' -->
             <px-map-gl-layer-symbol
-              id="symbol-one"
+              id="building-layer"
               icon-image="{icon}-15"
               icon-size="1"
-              active-feature="{{ activeFeature }}"
+              filter="[[filters.buildingLayer]]"
               source="fac-buildings">
 
               <px-map-gl-popup-debug
@@ -156,11 +158,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script>
     Polymer({
       is: 'fsd-buildings',
+//      listeners: {
+//        'px-dropdown-selection-changed': '_dropdownChanged'
+//      },
       properties: {
         rawBuildings: {
 	  type: Object,
           observer: '_processRequestsJSON'
 	},
+        selectedBuildings: {
+          type: Array,
+          notify: false,
+          observer: '_selectedBuildingsUpdated'
+        },
         buildingData: {
 	  type: Object,
           notify: true
@@ -169,13 +179,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: Array,
           notify: true,
           readOnly: true
+        },
+        filters: {
+          type: Object,
+          value: function() {
+            return {
+              'buildingLayer': null
+            }
+          },
+          notify: true,
+          readOnly: true
         }
       },
-      attached: function() {
-      },
-      _getMap: function() {
-      },
-      _mapLoaded: function(e) {
+      _selectedBuildingsUpdated: function(newVal, oldVal) {
+        console.log(oldVal);
+        console.log(newVal);
+        filters = this.filters;
+
+        if (newVal === null)
+          filters.buildingLayer = newVal
+        else
+          filters.buildingLayer = ["in", "asset_type", newVal];
+
+        this._setFilters(filters);
+        this.notifyPath('filters.buildingLayer');
       },
       _processRequestsJSON: function(raw) {
         console.log(raw);
@@ -251,14 +278,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           feature.properties.icon = iconMap[buildingType]
 
-          if (!buildingTypes[buildingType])
-            buildingTypes[buildingType] = buildingType;
+          if (!buildingTypes[buildingType]) {
+              buildingTypes[buildingType] = {
+                'key': buildingType,
+                'val': buildingType
+              }
+          }
 
 	  return feature;
 
         });
         this.buildingData = raw;
-        console.log(buildingTypes);
+        console.log(_.values(buildingTypes));
         this._setBuildingTypeOptions(_.values(buildingTypes));
 
       }
