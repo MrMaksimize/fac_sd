@@ -16,7 +16,6 @@
     "paper-icon-button": "PolymerElements/paper-icon-button#~1.1.0",
     "polymer": "Polymer/polymer#^1.6.0",
     "iron-ajax": "^2.0.2",
-    "px-map": "^1.5.1",
     "px-theme": "^2.0.4",
     "mapbox-gl": "^1.0.7",
     "px-data-table": "^4.0.3",
