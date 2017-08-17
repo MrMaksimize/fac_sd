@@ -9,5 +9,13 @@
   "scripts": {
     "lint": "eslint . --ext js,html --ignore-path .gitignore",
     "test": "npm run lint && polymer test"
+  },
+  "resolutions": {
+    "strip-ansi": "4.0.0",
+    "ansi-regex": "3.0.0",
+    "acorn": "3.3.0",
+    "string-width": "2.1.1",
+    "is-fullwidth-code-point": "2.0.0",
+    "domelementtype": "1.1.3"
   }
 }

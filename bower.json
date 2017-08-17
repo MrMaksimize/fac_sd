@@ -20,10 +20,19 @@
     "mapbox-gl": "^1.0.7",
     "px-data-table": "^4.0.3",
     "lodash": "^4.17.4",
-    "px-dropdown": "^4.0.4"
+    "px-dropdown": "^4.0.4",
+    "px-map-gl": "git://github.com/mrmaksimize/px-map-gl#master"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"
   },
-  "private": true
+  "private": true,
+  "resolutions": {
+    "iron-flex-layout": "^1.0.0",
+    "iron-iconset-svg": "^1.0.0",
+    "lodash": "^4.17.4",
+    "iron-icon": "^2.0.0",
+    "iron-a11y-keys-behavior": "^2.0.0",
+    "iron-resizable-behavior": "^1.0.5"
+  }
 }
