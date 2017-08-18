@@ -20,7 +20,9 @@
     "px-data-table": "^4.0.3",
     "lodash": "^4.17.4",
     "px-dropdown": "^4.0.4",
-    "px-map-gl": "git://github.com/mrmaksimize/px-map-gl#master"
+    "px-map-gl": "git://github.com/mrmaksimize/px-map-gl#master",
+    "paper-dialog": "^2.0.0",
+    "paper-button": "^2.0.0"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"

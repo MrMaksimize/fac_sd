@@ -14,6 +14,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/polymer/polymer.html" />
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html" />
 <link rel="import" href="../bower_components/px-dropdown/px-dropdown.html" />
+<link rel="import" href="../bower_components/px-data-table/px-data-table.html" />
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html" />
+<link rel="import" href="../bower_components/paper-button/paper-button.html" />
 <link rel="import" href="../bower_components/px-map-gl/px-map-gl.html" />
 <link rel="import" href="../bower_components/px-map-gl/px-map-gl-source-geojson.html" />
 <link rel="import" href="../bower_components/px-map-gl/px-map-gl-layer-symbol.html" />
@@ -53,6 +56,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :root {
         --px-map-icon-info-color: rgb(70,173,0);
       }
+
+      .col-wrap {
+          width: 100%
+      }
+      .col-wrap ul {
+          padding-left: 0px;
+      }
+      .col-wrap ul li {
+          list-style-type: none;
+      }
+      .left-col, .right-col {
+          width: 40%;
+          float: left;
+      }
+      .right-col {
+          float: right;
+      }
+
+      paper-dialog {
+        width: 50%;
+        height: 50%;
+        overflow: auto;
+      }
+
     </style>
 
 
@@ -77,7 +104,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     </div>
 
-    <div class="card" style="height:600px;width:92%;display:flex">
+    <div class="card" style="height:200px;width:92%;display:flex">
         <!--style="mapbox://styles/mapbox/cj62n87yx3mvi2rp93sfp2w9z"-->
         <px-map-gl zoom="12"
                 bearing="0"
@@ -95,7 +122,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             <px-map-gl-source-geojson
               id="fac-buildings"
-              data="{{ buildingData }}">
+              data="{{ buildingsGeoJSON }}">
             </px-map-gl-source-geojson>
 
 
@@ -106,7 +133,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               filter="[[filters.buildingLayer]]"
               source="fac-buildings">
 
-              <px-map-gl-popup-debug
+<!--              <px-map-gl-popup-debug
                 show-event="click"
                 title="popupData.activeFeatureProperties elements"
                 description="See full popupData in Console">
@@ -116,7 +143,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
 
-            <!--<px-map-gl-control-fullscreen
+            <px-map-gl-control-fullscreen
                 position="top-right">
             </px-map-gl-control-fullscreen>
 
@@ -152,14 +179,75 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </px-map-gl>
 
     </div>
+    <div class="card" style="width:92%; height: 200px">
+        <template is="dom-if" if="{{ buildingInfo.building_name }}">
+        <h1> [[ buildingInfo.building_name ]] </h1>
+        <div id="building-details" class="col-wrap">
+            <div class="left-col">
+            <ul>
+                <li><strong> Asset Group: </strong> [[ buildingInfo.building_name ]]</li>
+                <li><strong> Asset Type: </strong> [[ buildingInfo.asset_type ]]</li>
+                <li><strong> Department: </strong> [[ buildingInfo.department_name ]]</li>
+                <li><strong> Council District: </strong> [[ buildingInfo.council_district ]]</li>
+                <li><strong> Community Area: </strong> [[ buildingInfo.community_area ]]</li>
+            </ul>
+            </div>
+
+            <div class="right-col">
+            <ul>
+                <li><strong> Year Built: </strong> [[ buildingInfo.yr_build ]]</li>
+                <li><strong> Gross Sq. Ft.: </strong> [[ buildingInfo.gross_sq_ft ]]</li>
+                <li><strong> FCI: </strong> [[ buildingInfo.fci ]]</li>
+                <li><strong> Condition: </strong> [[ buildingInfo.condition ]]</li>
+                <li><strong> Additional Info: </strong>
+                    <a href="#" onclick="dialog.open()">View</a>
+                </li>
+            </ul>
+            </div> <!-- right-col -->
+        </div> <!-- col-wrap -->
+      </template>
+      <template is="dom-if" if="{{ !buildingInfo.building_name }}">
+          <h1> Click on a building to see more info. </h1>
+      </template>
+    </div><!-- card -->
+    <paper-dialog id="dialog">
+        <h2> Accessibility </h2>
+        <p> [[ buildingInfo.desc_accessibility ]] </p>
+        <h2> Electrical </h2>
+        <p> [[ buildingInfo.desc_electrical ]] </p>
+        <h2> Full </h2>
+        <p> [[ buildingInfo.desc_full ]] </p>
+        <h2> Interior Construction </h2>
+        <p> [[ buildingInfo.desc_interior_construction]] </p>
+        <h2> Interior Finishes</h2>
+        <p> [[ buildingInfo.desc_interior_finishes ]] </p>
+        <h2> Life Safety </h2>
+        <p> [[ buildingInfo.desc_life_safety]] </p>
+        <h2> Mechanical </h2>
+        <p> [[ buildingInfo.desc_mechanical ]] </p>
+        <h2> Plumbing </h2>
+        <p> [[ buildingInfo.desc_plumbing ]] </p>
+        <h2> Shell </h2>
+        <p> [[ buildingInfo.desc_shell ]] </p>
+        <h2> Site </h2>
+        <p> [[ buildingInfo.desc_site ]] </p>
+        <h2> Solar Energy </h2>
+        <p> [[ buildingInfo.desc_solar_energy]] </p>
+        <h2> Substructure </h2>
+        <p> [[ buildingInfo.desc_substructure ]] </p>
+        <div class="buttons">
+            <paper-button dialog-confirm>Done</paper-button>
+        </div>
+    </paper-dialog>
+
   </template>
 
   <script>
     Polymer({
       is: 'fsd-buildings',
-//      listeners: {
-//        'px-dropdown-selection-changed': '_dropdownChanged'
-//      },
+      listeners: {
+        'px-map-gl-layer-click': '_handleLayerClick'
+      },
       properties: {
         rawBuildings: {
 	  type: Object,
@@ -170,9 +258,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           notify: false,
           observer: '_selectedBuildingsUpdated'
         },
-        buildingData: {
+        buildingsGeoJSON: {
 	  type: Object,
           notify: true
+        },
+        buildingInfo: {
+          type: Object,
+          notify: true,
+          readOnly: true,
+          value: function () {
+            return {};
+          }
         },
 	buildingTypeOptions: {
           type: Array,
@@ -188,6 +284,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
           notify: true,
           readOnly: true
+        }
+      },
+      _handleLayerClick(e) {
+        if (e.srcElement.id == 'building-layer' && e.detail.event.features[0].properties) {
+          console.log(e.detail.event.features[0].properties);
+          this._setBuildingInfo(e.detail.event.features[0].properties)
         }
       },
       _selectedBuildingsUpdated: function(newVal, oldVal) {
@@ -287,7 +389,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	  return feature;
 
         });
-        this.buildingData = raw;
+        this.buildingsGeoJSON = raw;
         console.log(_.values(buildingTypes));
         this._setBuildingTypeOptions(_.values(buildingTypes));
 
