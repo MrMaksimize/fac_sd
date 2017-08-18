@@ -12,8 +12,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <!-- PolymerElement Components -->
 <link rel="import" href="../bower_components/polymer/polymer.html" />
-<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html" />
-<link rel="import" href="../bower_components/px-dropdown/px-dropdown.html" />
 <link rel="import" href="../bower_components/px-data-table/px-data-table.html" />
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html" />
 <link rel="import" href="../bower_components/paper-button/paper-button.html" />
@@ -83,27 +81,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
 
 
-    <iron-ajax
-        id="ajax"
-        url="/src/facilities.geojson"
-        last-response="{{ rawBuildings }}"
-        handle-as="json"
-        debounce-duration="300"
-        auto verbose>
-    </iron-ajax>
-
-    <div class="card" style="width:92%;display:flex">
-	 <px-dropdown
-           id='building-type'
-           items='[[ buildingTypeOptions ]]'
-           sort-mode="key"
-           button-style="bare"
-           display-value="Building Type"
-           selected="{{selectedBuildings}}">
-         </px-dropdown>
-
-    </div>
-
     <div class="card" style="height:300px;width:92%;display:flex">
         <!--style="mapbox://styles/mapbox/cj62n87yx3mvi2rp93sfp2w9z"-->
         <px-map-gl zoom="12"
@@ -122,7 +99,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             <px-map-gl-source-geojson
               id="fac-buildings"
-              data="{{ buildingsGeoJSON }}">
+              data="{{ processedBuildings }}">
             </px-map-gl-source-geojson>
 
 
@@ -130,7 +107,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <px-map-gl-layer-symbol
               id="building-layer"
               layout='{"icon-image": "{icon}-15", "icon-size":2}'
-              filter="[[filters.buildingLayer]]"
+              filter="[[ filters.buildingLayer ]]"
               source="fac-buildings">
 
 <!--              <px-map-gl-popup-debug
@@ -249,19 +226,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         'px-map-gl-layer-click': '_handleLayerClick'
       },
       properties: {
-        rawBuildings: {
-	  type: Object,
-          observer: '_processRequestsJSON'
-	},
-        selectedBuildings: {
+        // Selected buildings coming from fsd-app.
+        buildingFilters: {
           type: Array,
-          notify: false,
-          observer: '_selectedBuildingsUpdated'
-        },
-        buildingsGeoJSON: {
-	  type: Object,
           notify: true
+//          observer: '_buildingFiltersUpdated'
         },
+        // Building Info to display on the infobox.
         buildingInfo: {
           type: Object,
           notify: true,
@@ -270,10 +241,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             return {};
           }
         },
-	buildingTypeOptions: {
-          type: Array,
-          notify: true,
-          readOnly: true
+        // Prcessed bldg data coming from fsd-app.
+        processedBuildings: {
+          type: Object,
+          notify: true
         },
         filters: {
           type: Object,
@@ -286,113 +257,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           readOnly: true
         }
       },
+      observers: [
+        '_buildingFiltersUpdated(buildingFilters.*)',
+      ],
       _handleLayerClick(e) {
         if (e.srcElement.id == 'building-layer' && e.detail.event.features[0].properties) {
           console.log(e.detail.event.features[0].properties);
           this._setBuildingInfo(e.detail.event.features[0].properties)
         }
       },
-      _selectedBuildingsUpdated: function(newVal, oldVal) {
-        console.log(oldVal);
-        console.log(newVal);
-        filters = this.filters;
+      _buildingFiltersUpdated: function(changeData) {
+        console.log(changeData);
+        currentFilters = this.filters;
+        const newVal = changeData.value;
+        const path = changeData.path;
 
-        if (newVal === null)
-          filters.buildingLayer = newVal
-        else
-          filters.buildingLayer = ["in", "asset_type", newVal];
-
-        this._setFilters(filters);
-        this.notifyPath('filters.buildingLayer');
-      },
-      _processRequestsJSON: function(raw) {
-        console.log(raw);
-        const iconMap = {
-	    "Office": "town-hall",
-	    "Public Event Site": "picnic-site",
-	    "Theatre": "theatre",
-	    "Parking Garage": "parking",
-	    "Concessions": "fast-food",
-	    "Recreation Center": "soccer",
-	    "Fire Station": "fire-station",
-	    "Maintenance Building": "warehouse",
-	    "Shop": "shop",
-	    "Blockhouse": "warehouse",
-	    "Guardhouse": "ranger-station",
-	    "Residence": "residential-community",
-	    "Storm Water Pump Station": "industry",
-	    "Warehouse": "warehouse",
-	    "Lifeguard Station": "swimming",
-	    "Retail": "shop",
-	    "Museum": "museum",
-	    "Vehicle/Repair Facility": "car",
-	    "Community Center": "place-of-worship",
-	    "Historical Building": "landmark",
-	    "Store": "shop",
-	    "Yard": "natural",
-	    "Vehicle Facility": "car",
-	    "Storage": "warehouse",
-	    "Tank": "warehouse",
-	    "Event/Break Area": "picnic-site",
-	    "Equipment Room": "",
-	    "Community Service Center": "",
-	    "Comfort Station": "picnic-site",
-	    "Senior Center": "wheelchair",
-	    "Library": "library",
-	    "Swimming Pool": "swimming",
-	    "Recreation Facility": "soccer",
-	    "Athletic Facility": "soccer",
-	    "Cultural Center": "place-of-worship",
-	    "Studio": "building",
-	    "Kiosk": "information",
-	    "Police Storefront": "police",
-	    "Police Station": "police",
-	    "Teen Center": "place-of-worship",
-	    "Boat Center": "ferry",
-	    "Training Area": "college",
-	    "Hanger": "airport",
-	    "Nursery": "florist",
-	    "Laboratory": "pharmacy",
-	    "Real Estate Asset": "building",
-	    "Police Training": "police",
-	    "Fire Training": "fire-station",
-	    "Ranger Station": "ranger-station",
-	    "Skate Park": "skiing",
-	    "Boat Dock": "ferry",
-	    "Youth Center": "playground",
-	    "Locker Room": "soccer",
-	    "Canine Kennels": "dog-park",
-	    "Transit Facility": "bus-15",
-	    "Elevator Building": "entrance",
-	    "Park Shelter": "park-alt1",
-	    "Restroom": "toilet",
-	    "Auditorium": "theatre",
-	    "Trailer": "ice-cream",
-	    "Dump Station": "recycling",
-	    "Leased Facility": "building"
-	};
-
-        const buildingTypes = {};
-
-        raw.features = _.map(raw.features, function(feature) {
-          let buildingType = feature.properties.asset_type;
-
-          feature.properties.icon = iconMap[buildingType]
-
-          if (!buildingTypes[buildingType]) {
-              buildingTypes[buildingType] = {
-                'key': buildingType,
-                'val': buildingType
-              }
+        if (newVal === null || typeof newVal !== "string")
+          currentFilters.buildingLayer = null
+        else {
+          if (path === "buildingFilters.buildingType") {
+            currentFilters.buildingLayer = ["in", "asset_type", newVal];
           }
+        }
 
-	  return feature;
-
-        });
-        this.buildingsGeoJSON = raw;
-        console.log(_.values(buildingTypes));
-        this._setBuildingTypeOptions(_.values(buildingTypes));
-
+        this._setFilters(currentFilters);
+        this.notifyPath('filters.buildingLayer');
       }
     });
   </script>

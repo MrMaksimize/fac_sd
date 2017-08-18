@@ -21,7 +21,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html" />
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/px-dropdown/px-dropdown.html" />
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="fsd-icons.html">
 
@@ -74,6 +76,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <app-toolbar>FacilSD</app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
           <a name="fsd-buildings" href="/fsd-buildings">Building Map</a>
+
+        <px-dropdown
+           id='building-type'
+           items='[[ buildingTypeOptions ]]'
+           sort-mode="key"
+           button-style="bare"
+           display-value="Building Type"
+           selected="{{ buildingFilters.buildingType }}">
+         </px-dropdown>
+
           <!--<a name="view2" href="/view2">View Two</a>-->
           <!--<a name="view3" href="/view3">View Three</a>-->
         </iron-selector>
@@ -94,12 +106,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             attr-for-selected="name"
             fallback-selection="view404"
             role="main">
-          <fsd-buildings name="fsd-buildings"></fsd-buildings>
+          <fsd-buildings name="fsd-buildings"
+                         processed-buildings="[[ processedBuildings ]]"
+                         building-filters="[[ buildingFilters ]]">
+          </fsd-buildings>
           <fsd-list name="fsd-list"></fsd-list>
           <fsd-404  name="fsd-404"></fsd-404>
         </iron-pages>
       </app-header-layout>
     </app-drawer-layout>
+
+    <iron-ajax
+        id="ajax"
+        url="/src/facilities.geojson"
+        last-response="{{ rawBuildings }}"
+        handle-as="json"
+        debounce-duration="300"
+        auto verbose>
+    </iron-ajax>
+
   </template>
 
   <script>
@@ -112,6 +137,36 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           reflectToAttribute: true,
           observer: '_pageChanged',
         },
+        // Raw data coming in from iron-ajax
+        rawBuildings: {
+	  type: Object,
+          observer: '_processRawBuildingsJSON'
+	},
+        // Type options for dropdown.
+        buildingTypeOptions: {
+          type: Array,
+          notify: true,
+          readOnly: true
+        },
+        // Buildings data after parsing the iron-ajax data.
+        processedBuildings: {
+	  type: Object,
+          notify: true,
+          readOnly: true,
+          value: function() {
+              return {};
+          }
+        },
+        // Selected buildings from drop down.
+        buildingFilters: {
+          type: Object,
+          notify: true,
+          value: function() {
+              return {}
+          }
+        },
+
+
       },
 
       observers: [
@@ -135,6 +190,93 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _showPage404: function() {
         this.page = 'fsd-404';
       },
+
+      _processRawBuildingsJSON: function(raw) {
+        const iconMap = {
+	    "Office": "town-hall",
+	    "Public Event Site": "picnic-site",
+	    "Theatre": "theatre",
+	    "Parking Garage": "parking",
+	    "Concessions": "fast-food",
+	    "Recreation Center": "soccer",
+	    "Fire Station": "fire-station",
+	    "Maintenance Building": "warehouse",
+	    "Shop": "shop",
+	    "Blockhouse": "warehouse",
+	    "Guardhouse": "ranger-station",
+	    "Residence": "residential-community",
+	    "Storm Water Pump Station": "industry",
+	    "Warehouse": "warehouse",
+	    "Lifeguard Station": "swimming",
+	    "Retail": "shop",
+	    "Museum": "museum",
+	    "Vehicle/Repair Facility": "car",
+	    "Community Center": "place-of-worship",
+	    "Historical Building": "landmark",
+	    "Store": "shop",
+	    "Yard": "natural",
+	    "Vehicle Facility": "car",
+	    "Storage": "warehouse",
+	    "Tank": "warehouse",
+	    "Event/Break Area": "picnic-site",
+	    "Equipment Room": "",
+	    "Community Service Center": "",
+	    "Comfort Station": "picnic-site",
+	    "Senior Center": "wheelchair",
+	    "Library": "library",
+	    "Swimming Pool": "swimming",
+	    "Recreation Facility": "soccer",
+	    "Athletic Facility": "soccer",
+	    "Cultural Center": "place-of-worship",
+	    "Studio": "building",
+	    "Kiosk": "information",
+	    "Police Storefront": "police",
+	    "Police Station": "police",
+	    "Teen Center": "place-of-worship",
+	    "Boat Center": "ferry",
+	    "Training Area": "college",
+	    "Hanger": "airport",
+	    "Nursery": "florist",
+	    "Laboratory": "pharmacy",
+	    "Real Estate Asset": "building",
+	    "Police Training": "police",
+	    "Fire Training": "fire-station",
+	    "Ranger Station": "ranger-station",
+	    "Skate Park": "skiing",
+	    "Boat Dock": "ferry",
+	    "Youth Center": "playground",
+	    "Locker Room": "soccer",
+	    "Canine Kennels": "dog-park",
+	    "Transit Facility": "bus-15",
+	    "Elevator Building": "entrance",
+	    "Park Shelter": "park-alt1",
+	    "Restroom": "toilet",
+	    "Auditorium": "theatre",
+	    "Trailer": "ice-cream",
+	    "Dump Station": "recycling",
+	    "Leased Facility": "building"
+	};
+        const buildingTypes = {};
+
+        raw.features = _.map(raw.features, function(feature) {
+          let buildingType = feature.properties.asset_type;
+
+          feature.properties.icon = iconMap[buildingType]
+
+          if (!buildingTypes[buildingType]) {
+              buildingTypes[buildingType] = {
+                'key': buildingType,
+                'val': buildingType
+              }
+          }
+	  return feature;
+        });
+
+        console.log(raw);
+        console.log(_.values(buildingTypes));
+        this._setProcessedBuildings(raw);
+        this._setBuildingTypeOptions(_.values(buildingTypes));
+      }
     });
   </script>
 </dom-module>
