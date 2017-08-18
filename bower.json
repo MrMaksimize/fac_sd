@@ -17,7 +17,6 @@
     "polymer": "Polymer/polymer#^1.6.0",
     "iron-ajax": "^2.0.2",
     "px-theme": "^2.0.4",
-    "mapbox-gl": "^1.0.7",
     "px-data-table": "^4.0.3",
     "lodash": "^4.17.4",
     "px-dropdown": "^4.0.4",
