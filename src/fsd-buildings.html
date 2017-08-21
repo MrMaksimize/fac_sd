@@ -15,7 +15,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/px-data-table/px-data-table.html" />
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html" />
 <link rel="import" href="../bower_components/paper-button/paper-button.html" />
-<link rel="import" href="../bower_components/px-map-gl/px-map-gl.html" />
 <link rel="import" href="../bower_components/px-map-gl/px-map-gl-source-geojson.html" />
 <link rel="import" href="../bower_components/px-map-gl/px-map-gl-layer-symbol.html" />
 <link rel="import" href="../bower_components/px-map-gl/px-map-gl-popup-debug.html" />
@@ -48,8 +47,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }*/
 
       :host {
-        width: 100vw;
-        height: 100vh;
+        width: 100%;
+        height: 100%;
       }
       :root {
         --px-map-icon-info-color: rgb(70,173,0);
@@ -81,9 +80,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
 
 
-    <div class="card" style="height:300px;width:92%;display:flex">
+    <!--<div class="card" style="height:300px;width:92%;display:flex">-->
+    <div class="card" style="height:100%; margin:0px; padding:0px;width:100%; display:flex;">
         <!--style="mapbox://styles/mapbox/cj62n87yx3mvi2rp93sfp2w9z"-->
-        <px-map-gl zoom="12"
+        <px-map-gl zoom="14"
                 bearing="0"
                 pitch="0"
                 flex-to-size
@@ -156,7 +156,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </px-map-gl>
 
     </div>
-    <div class="card" style="width:92%; height: 200px">
+    <div class="card" style="width:92%; height: 200px; display: none">
         <template is="dom-if" if="{{ buildingInfo.building_name }}">
         <h1> [[ buildingInfo.building_name ]] </h1>
         <div id="building-details" class="col-wrap">
