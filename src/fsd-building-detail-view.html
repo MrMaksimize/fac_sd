@@ -22,7 +22,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     </style>
 
-        <h1> <a href="/fsd-building-detail/[[buildingItem.properties.building_number]]">[[ buildingItem.properties.building_name ]]</a> </h1>
+       <template is="dom-if" if="{{ !expanded }}">
+         <h1> <a href="/fsd-list/[[ buildingItem.properties.building_number ]]">[[ buildingItem.properties.building_name ]]</a> </h1>
+       </template>
+       <template is="dom-if" if="{{ expanded }}">
+         <h1>[[ buildingItem.properties.building_name ]]</h1>
+       </template>
         <div id="building-details" class="col12 clearfix">
             <div class="col4">
             <ul>
@@ -46,6 +51,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </ul>
             </div> <!-- right-col -->
         </div> <!-- col-wrap -->
+
+
         <template is="dom-if" if="{{ expanded }}">
             <div class="col12 cleafix">
                 <h2> Accessibility </h2>

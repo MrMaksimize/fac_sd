@@ -9,26 +9,41 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html" />
+<link rel="import" href="../bower_components/paper-button/paper-button.html" />
 <link rel="import" href="fsd-building-detail-view.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="fsd-icons.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="fsd-list">
   <template>
     <style include="shared-styles">
       :host {
-        display: block;
-
-        padding: 10px;
       }
     </style>
 
-    <template is="dom-repeat" items="{{ buildingList }}">
+    <app-route
+        route="{{route}}"
+        pattern="/:buildingId"
+        data="{{routeData}}"
+        tail="{{subroute}}"></app-route>
+
+
+    <template is="dom-repeat" items="{{ buildingList }}" initial-count="10">
         <div class="card">
             <fsd-building-detail-view building-item="[[ item ]]"></fsd-building-detail-view>
         </div>
     </template> <!-- dom-repeat -->
 
-  </template>
+    <paper-dialog id="building-detail-modal" modal on-iron-overlay-opened="patchOverlay">
+            <div class="buttons">
+                <paper-icon-button dialog-confirm icon="fsd-icons:close"></paper-icon-button>
+            </div>
+        <fsd-building-detail-view building-item="[[ modalBuilding ]]" expanded></fsd-building-detail-view>
+    </paper-dialog>
+
+      </template>
 
 
  <script>
@@ -51,15 +66,64 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             return [];
           }
         },
+        modalBuilding: {
+          type: Object,
+          notify: true
+        },
         // Prcessed bldg data coming from fsd-app.
         processedBuildings: {
           type: Object,
           notify: true
-        }
+        },
+        routeData: {
+          type: Object,
+          notify: true
+        },
+        activeBuildingId: {
+          type: String,
+          observer: '_activeBuildingIdChanged'
+        },
       },
       observers: [
         '_buildingDataUpdated(processedBuildings.*, buildingFilters.*)',
+        '_routeDataChanged(routeData.*)',
+        '_modalBuildingChanged(modalBuilding.*)'
       ],
+      _routeDataChanged(routeDataDelta) {
+        console.log(routeDataDelta);
+        if (routeDataDelta.value.buildingId) {
+          this.debounce('showModal', () => {
+            this.set('activeBuildingId', this.routeData.buildingId);
+          }, 1000);
+        }
+      },
+
+      patchOverlay: function (e) {
+        if (e.target.withBackdrop) {
+          e.target.parentNode.insertBefore(e.target.backdropElement, e.target);
+        }
+      },
+
+      _modalBuildingChanged: function(modalBuildingDelta) {
+        console.log(modalBuildingDelta);
+        if (modalBuildingDelta.value)
+          Polymer.dom(this.root).querySelector('#building-detail-modal').open();
+      },
+      _activeBuildingIdChanged: function(newVal, oldVal) {
+        console.log(newVal);
+        console.log(oldVal);
+        console.log(Polymer.dom(this.root).querySelector('#building-detail-modal'));
+        console.log(this.processedBuildings);
+          if (newVal) {
+            const modalBuildingIndex = _.findIndex(this.processedBuildings.features, function(buildingFeature) {
+                return buildingFeature.properties.building_number == newVal;
+            });
+            if (modalBuildingIndex !== -1)
+              this.set('modalBuilding', this.processedBuildings.features[modalBuildingIndex]);
+            else
+              this.set('modalBuilding', null);
+          }
+      },
       _buildingDataUpdated: function(processedBuildingsChange, buildingFiltersChange) {
         this.debounce('processBuildings', () => {
             console.log(processedBuildingsChange);

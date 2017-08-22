@@ -157,7 +157,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </fsd-buildings>
           <fsd-list name="fsd-list"
                     processed-buildings="[[ processedBuildings ]]"
-                    building-filters="[[ buildingFilters ]]"></fsd-list>
+                    building-filters="[[ buildingFilters ]]"
+                    route="{{ subroute }}"></fsd-list>
           <fsd-404  name="fsd-404"></fsd-404>
         </iron-pages>
       </app-header-layout>
@@ -219,7 +220,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       observers: [
         '_routePageChanged(routeData.page)',
       ],
-
       _routePageChanged: function(page, oldPage) {
         this.page = page || 'fsd-buildings';
 
@@ -319,6 +319,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	  return feature;
         });
 
+        raw.features = raw.features.slice(0, 10);
         console.log(raw);
         console.log(_.values(buildingTypes));
         this._setProcessedBuildings(raw);
