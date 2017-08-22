@@ -1,0 +1,111 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="fsd-building-detail-view">
+  <template>
+    <style include="shared-styles">
+      :host {
+        h1 {
+          margin-top: 8px;
+          margin-bottom: 8px;
+        }
+      }
+    </style>
+
+        <h1> <a href="/fsd-building-detail/[[buildingItem.properties.building_number]]">[[ buildingItem.properties.building_name ]]</a> </h1>
+        <div id="building-details" class="col12 clearfix">
+            <div class="col4">
+            <ul>
+                <li><strong> Asset Group: </strong> [[ buildingItem.properties.asset_group]]</li>
+                <li><strong> Asset Type: </strong> [[ buildingItem.properties.asset_type ]]</li>
+                <li><strong> Department: </strong> [[ buildingItem.properties.department_name ]]</li>
+            </ul>
+            </div>
+
+            <div class="col4">
+                <li><strong> Council District: </strong> [[ buildingItem.properties.council_district ]]</li>
+                <li><strong> Community Area: </strong> [[ buildingItem.properties.community_area ]]</li>
+                <li><strong> Year Built: </strong> [[ buildingItem.properties.yr_build ]]</li>
+            </div>
+
+            <div class="col4">
+            <ul>
+                <li><strong> Gross Sq. Ft.: </strong> [[ buildingItem.properties.gross_sq_ft ]]</li>
+                <li><strong> FCI: </strong> [[ buildingItem.properties.fci ]]</li>
+                <li><strong> Condition: </strong> [[ buildingItem.properties.condition ]]</li>
+            </ul>
+            </div> <!-- right-col -->
+        </div> <!-- col-wrap -->
+        <template is="dom-if" if="{{ expanded }}">
+            <div class="col12 cleafix">
+                <h2> Accessibility </h2>
+                <p> [[ buildingItem.properties.desc_accessibility ]] </p>
+                <h2> Electrical </h2>
+                <p> [[ buildingItem.properties.desc_electrical ]] </p>
+                <h2> Full </h2>
+                <p> [[ buildingItem.properties.desc_full ]] </p>
+                <h2> Interior Construction </h2>
+                <p> [[ buildingItem.properties.desc_interior_construction]] </p>
+                <h2> Interior Finishes</h2>
+                <p> [[ buildingItem.properties.desc_interior_finishes ]] </p>
+                <h2> Life Safety </h2>
+                <p> [[ buildingItem.properties.desc_life_safety]] </p>
+                <h2> Mechanical </h2>
+                <p> [[ buildingItem.properties.desc_mechanical ]] </p>
+                <h2> Plumbing </h2>
+                <p> [[ buildingItem.properties.desc_plumbing ]] </p>
+                <h2> Shell </h2>
+                <p> [[ buildingItem.properties.desc_shell ]] </p>
+                <h2> Site </h2>
+                <p> [[ buildingItem.properties.desc_site ]] </p>
+                <h2> Solar Energy </h2>
+                <p> [[ buildingItem.properties.desc_solar_energy]] </p>
+                <h2> Substructure </h2>
+                <p> [[ buildingItem.properties.desc_substructure ]] </p>
+            </div>
+        </template>
+  </template>
+
+
+
+ <script>
+    Polymer({
+      is: 'fsd-building-detail-view',
+      listeners: {
+      },
+      properties: {
+        buildingItem: {
+          type: Object,
+          notify: true
+        },
+        expanded: {
+          type: Boolean,
+          value: false
+        }
+      },
+      attached: function() {
+          console.log('attached');
+      },
+      observers: [
+      ],
+      _buildingDataUpdated: function(processedBuildingsChange) {
+        /*this.debounce('processBuildings', () => {
+            console.log(processedBuildingsChange);
+            console.log(buildingFiltersChange);
+            this._setBuildingList(processedBuildingsChange.value.features);
+            console.log(processedBuildingsChange.value.features);
+        }, 1000);*/
+      },
+    });
+  </script>
+</dom-module>

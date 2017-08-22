@@ -22,6 +22,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/px-map-gl/px-map-gl-control-geolocate.html" />
 <link rel="import" href="../bower_components/px-map-gl/px-map-gl-control-scale.html" />
 <link rel="import" href="../bower_components/px-map-gl/px-map-gl-control-fullscreen.html" />
+<link rel="import" href="fsd-building-detail-view.html">
 <link rel="import" href="shared-styles.html">
 
 <!-- Predix UI Components -->
@@ -60,7 +61,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         top: -175px;
         background: white;
         opacity: 0.9;
+        padding-left: 5px;
       }
+      #map-card {
+        height: 100%;
+        width: 100%;
+        margin: 0px;
+        display: flex;
+        padding: 0px;
+      }
+
 
       paper-dialog {
         width: 50%;
@@ -71,9 +81,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
 
 
-    <!--<div class="card" style="height:300px;width:92%;display:flex">-->
-    <div class="card" style="height:100%; margin:0px; padding:0px;width:100%; display:flex;">
-        <!--style="mapbox://styles/mapbox/cj62n87yx3mvi2rp93sfp2w9z"-->
+    <div id="map-card">
         <px-map-gl zoom="14"
                 bearing="0"
                 pitch="0"
@@ -147,69 +155,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </px-map-gl>
 
     </div>
-    <div id="building-info-card" style="width:100%; height: 200px;">
-        <template is="dom-if" if="{{ buildingInfo.building_name }}">
-        <h1> [[ buildingInfo.building_name ]] </h1>
-        <div id="building-details" class="col12 clearfix">
-            <div class="col4">
-            <ul>
-                <li><strong> Asset Group: </strong> [[ buildingInfo.building_name ]]</li>
-                <li><strong> Asset Type: </strong> [[ buildingInfo.asset_type ]]</li>
-                <li><strong> Department: </strong> [[ buildingInfo.department_name ]]</li>
-                <li><strong> Council District: </strong> [[ buildingInfo.council_district ]]</li>
-            </ul>
-            </div>
-
-            <div class="col4">
-                <li><strong> Community Area: </strong> [[ buildingInfo.community_area ]]</li>
-                <li><strong> Year Built: </strong> [[ buildingInfo.yr_build ]]</li>
-                <li><strong> Gross Sq. Ft.: </strong> [[ buildingInfo.gross_sq_ft ]]</li>
-            </div>
-
-            <div class="col4">
-            <ul>
-                <li><strong> FCI: </strong> [[ buildingInfo.fci ]]</li>
-                <li><strong> Condition: </strong> [[ buildingInfo.condition ]]</li>
-                <li><strong> Additional Info: </strong>
-                    <a href="#" onclick="dialog.open()">View</a>
-                </li>
-            </ul>
-            </div> <!-- right-col -->
-        </div> <!-- col-wrap -->
-      </template>
-      <template is="dom-if" if="{{ !buildingInfo.building_name }}">
+    <div id="building-info-card" style="">
+        <template is="dom-if" if="{{ buildingInfo.properties.building_name }}">
+            <fsd-building-detail-view building-item="[[ buildingInfo ]]"></fsd-building-detail-view>
+        </template>
+      <template is="dom-if" if="{{ !buildingInfo.properties.building_name }}">
           <h1> Click on a building to see more info. </h1>
       </template>
     </div><!-- card -->
-    <paper-dialog id="dialog">
-        <h2> Accessibility </h2>
-        <p> [[ buildingInfo.desc_accessibility ]] </p>
-        <h2> Electrical </h2>
-        <p> [[ buildingInfo.desc_electrical ]] </p>
-        <h2> Full </h2>
-        <p> [[ buildingInfo.desc_full ]] </p>
-        <h2> Interior Construction </h2>
-        <p> [[ buildingInfo.desc_interior_construction]] </p>
-        <h2> Interior Finishes</h2>
-        <p> [[ buildingInfo.desc_interior_finishes ]] </p>
-        <h2> Life Safety </h2>
-        <p> [[ buildingInfo.desc_life_safety]] </p>
-        <h2> Mechanical </h2>
-        <p> [[ buildingInfo.desc_mechanical ]] </p>
-        <h2> Plumbing </h2>
-        <p> [[ buildingInfo.desc_plumbing ]] </p>
-        <h2> Shell </h2>
-        <p> [[ buildingInfo.desc_shell ]] </p>
-        <h2> Site </h2>
-        <p> [[ buildingInfo.desc_site ]] </p>
-        <h2> Solar Energy </h2>
-        <p> [[ buildingInfo.desc_solar_energy]] </p>
-        <h2> Substructure </h2>
-        <p> [[ buildingInfo.desc_substructure ]] </p>
-        <div class="buttons">
-            <paper-button dialog-confirm>Done</paper-button>
-        </div>
+    <paper-dialog id="building-info-dialog" modal>
+        <h1> Hello</h1>
     </paper-dialog>
+
+
 
   </template>
 
@@ -224,8 +182,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         buildingFilters: {
           type: Array,
           notify: true
-//          observer: '_buildingFiltersUpdated'
         },
+
         // Building Info to display on the infobox.
         buildingInfo: {
           type: Object,
@@ -240,6 +198,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: Object,
           notify: true
         },
+
+        // Filters to apply to map
         filters: {
           type: Object,
           value: function() {
@@ -256,10 +216,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       ],
       _handleLayerClick(e) {
         if (e.srcElement.id == 'building-layer' && e.detail.event.features[0].properties) {
-          console.log(e.detail.event.features[0].properties);
-          this._setBuildingInfo(e.detail.event.features[0].properties)
+          console.log(e.detail.event.features[0]);
+          this._setBuildingInfo(e.detail.event.features[0])
         }
       },
+      // App filters changed.
       _buildingFiltersUpdated: function(changeData) {
         console.log(changeData);
         currentFilters = this.filters;

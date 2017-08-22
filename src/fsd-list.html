@@ -9,9 +9,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="fsd-building-detail-view.html">
 <link rel="import" href="shared-styles.html">
 
-<dom-module id="my-view2">
+<dom-module id="fsd-list">
   <template>
     <style include="shared-styles">
       :host {
@@ -21,17 +22,52 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     </style>
 
-    <div class="card">
-      <div class="circle">2</div>
-      <h1>View Two</h1>
-      <p>Ea duis bonorum nec, falli paulo aliquid ei eum.</p>
-      <p>Id nam odio natum malorum, tibique copiosae expetenda mel ea.Detracto suavitate repudiandae no eum. Id adhuc minim soluta nam.Id nam odio natum malorum, tibique copiosae expetenda mel ea.</p>
-    </div>
+    <template is="dom-repeat" items="{{ buildingList }}">
+        <div class="card">
+            <fsd-building-detail-view building-item="[[ item ]]"></fsd-building-detail-view>
+        </div>
+    </template> <!-- dom-repeat -->
+
   </template>
 
-  <script>
+
+ <script>
     Polymer({
-      is: 'my-view2',
+      is: 'fsd-list',
+      listeners: {
+      },
+      properties: {
+        // Selected buildings coming from fsd-app.
+        buildingFilters: {
+          type: Array,
+          notify: true
+        },
+
+        buildingList: {
+          type: Array,
+          notify: true,
+          readOnly: true,
+          value: function () {
+            return [];
+          }
+        },
+        // Prcessed bldg data coming from fsd-app.
+        processedBuildings: {
+          type: Object,
+          notify: true
+        }
+      },
+      observers: [
+        '_buildingDataUpdated(processedBuildings.*, buildingFilters.*)',
+      ],
+      _buildingDataUpdated: function(processedBuildingsChange, buildingFiltersChange) {
+        this.debounce('processBuildings', () => {
+            console.log(processedBuildingsChange);
+            console.log(buildingFiltersChange);
+            this._setBuildingList(processedBuildingsChange.value.features);
+            console.log(processedBuildingsChange.value.features);
+        }, 1000);
+      },
     });
   </script>
 </dom-module>
