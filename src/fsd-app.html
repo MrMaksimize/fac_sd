@@ -26,15 +26,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/px-dropdown/px-dropdown.html" />
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/px-map-gl/px-map-gl.html" />
+<!--<link rel="import" href="../bower_components/px-pill-toggle/px-toggle.html" />-->
 <link rel="import" href="fsd-icons.html">
 
 <dom-module id="fsd-app">
   <template>
     <style>
       :host {
-        --app-primary-color: #4285f4;
+        --app-primary-color: #37424a;
         --app-secondary-color: black;
         --app-drawer-width: 300px;
+        --app-drawer-content-container: {
+          background: var(--app-primary-color);
+          padding-top: 170px;
+        }
 
         display: block;
         height: 100%;
@@ -72,6 +77,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         color: black;
         font-weight: bold;
       }
+      px-dropdown {
+        width: 100%;
+      }
     </style>
 
     <app-location route="{{route}}"></app-location>
@@ -85,9 +93,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <!-- Drawer content -->
       <app-drawer id="drawer">
 
-        <app-toolbar>FacilSD</app-toolbar>
+        <app-toolbar>
+          <img src="/images/facil_sd_logo.png"
+               alt="FacilSD Logo"/>
+        </app-toolbar>
 
-        <px-map-gl id="nav-map" zoom="11"
+        <!--<px-map-gl id="nav-map" zoom="11"
                 bearing="0"
                 pitch="0"
                 flex-to-size
@@ -96,7 +107,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 lat="32.7157"
                 lng="-117.1611">
 
-        </px-map-gl>
+        </px-map-gl>-->
 
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
           <a name="fsd-buildings" href="/fsd-buildings">Building Map</a>
@@ -108,10 +119,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
            id='building-type'
            items='[[ buildingTypeOptions ]]'
            sort-mode="key"
-           button-style="bare"
+           button-style="tertiary"
            display-value="Building Type"
            selected="{{ buildingFilters.buildingType }}">
          </px-dropdown>
+
+        <!--<px-toggle
+            selected="d2"
+            items='[{"key":"d2", "val": "2d"},{"key":"d3", "val":"3d"}]'></px-toggle>-->
+
+
 
 
       </app-drawer>
