@@ -29,14 +29,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         data="{{routeData}}"
         tail="{{subroute}}"></app-route>
 
-    <div class="card">
-      <input value="{{buildingFilters.buildingName::input}}" placeholder="filter">
+    <div class="filter-card clearfix col12">
+      <input value="{{buildingFilters.buildingName::input}}" class="pad1 col10 margin1" placeholder="filter">
     </div>
-    <template id="resultList" is="dom-repeat" items="{{ buildingList }}" initial-count="10">
-        <div class="card">
-            <fsd-building-detail-view building-item="[[ item ]]"></fsd-building-detail-view>
-        </div>
-    </template> <!-- dom-repeat -->
+
+    <div id="result-container" class="col12 clearflix">
+        <template id="resultList" is="dom-repeat" items="{{ buildingList }}" initial-count="10">
+            <div class="card col10 pad1 margin1">
+                <fsd-building-detail-view building-item="[[ item ]]"></fsd-building-detail-view>
+            </div>
+        </template> <!-- dom-repeat -->
+    </div>
 
     <paper-dialog id="building-detail-modal" modal on-iron-overlay-opened="patchOverlay">
             <div class="buttons">
@@ -126,7 +129,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         console.log(oldVal);
         console.log(Polymer.dom(this.root).querySelector('#building-detail-modal'));
         console.log(this.processedBuildings);
-          if (newVal) {
+          if (this.processedBuildings) {
             const modalBuildingIndex = _.findIndex(this.processedBuildings.features, function(buildingFeature) {
                 return buildingFeature.properties.building_number == newVal;
             });
