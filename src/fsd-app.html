@@ -185,7 +185,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </app-header-layout>
 
     <footer id="panda-footer">
-      Sticky footer?
+      Buildings. YAY.
     </footer>
 
     </app-drawer-layout>
@@ -195,7 +195,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         url="/src/facilities.geojson"
         last-response="{{ rawBuildings }}"
         handle-as="json"
-        debounce-duration="300"
+        debounce-duration="3000"
         auto verbose>
     </iron-ajax>
 
@@ -240,10 +240,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         processedBuildings: {
 	  type: Object,
           notify: true,
-          readOnly: true,
-          value: function() {
-              return {};
-          }
+          readOnly: true
         },
         // Selected buildings from drop down.
         buildingFilters: {
