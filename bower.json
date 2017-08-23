@@ -15,13 +15,12 @@
     "iron-selector": "PolymerElements/iron-selector#^1.0.0",
     "paper-icon-button": "PolymerElements/paper-icon-button#~1.1.0",
     "polymer": "Polymer/polymer#^1.6.0",
-    "iron-ajax": "^2.0.2",
     "px-theme": "^2.0.4",
     "px-data-table": "^4.0.3",
     "lodash": "^4.17.4",
     "px-dropdown": "^4.0.4",
     "px-map-gl": "git://github.com/mrmaksimize/px-map-gl#master",
-    "px-pill-toggle": "git://github.com/mrmaksimize/px-pill-toggle#master",
+    "iron-ajax": "^2.0.5",
     "paper-dialog": "^2.0.0",
     "paper-button": "^2.0.0"
   },
@@ -30,10 +29,11 @@
   },
   "private": true,
   "resolutions": {
-    "iron-flex-layout": "^1.0.0",
     "iron-iconset-svg": "^1.0.0",
+    "iron-flex-layout": "^1.0.0",
     "lodash": "^4.17.4",
-    "iron-a11y-keys-behavior": "^2.0.0",
-    "iron-resizable-behavior": "^1.0.5"
+    "iron-resizable-behavior": "^1.0.0",
+    "iron-icon": "^1.0.0",
+    "iron-a11y-keys-behavior": "1 - 2"
   }
 }
