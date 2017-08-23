@@ -29,7 +29,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         data="{{routeData}}"
         tail="{{subroute}}"></app-route>
 
-
+    <div class="card">
+      <input value="{{buildingFilters.buildingName::input}}" placeholder="filter">
+    </div>
     <template id="resultList" is="dom-repeat" items="{{ buildingList }}" initial-count="10">
         <div class="card">
             <fsd-building-detail-view building-item="[[ item ]]"></fsd-building-detail-view>
@@ -136,18 +138,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
       _buildingDataUpdated: function(processedBuildingsDelta, buildingFiltersDelta) {
         this.debounce('processBuildings', () => {
-          console.log('bf');
-          console.log('bd');
 
+          console.log(processedBuildingsDelta);
+          console.log(buildingFiltersDelta);
+          console.log(this.buildingFilters);
           var rawBuildings = this.processedBuildings.features;
-          if (this.buildingFilters.buildingType) {
             rawBuildings = _.filter(rawBuildings, (building) => {
-              return building.properties.asset_type === this.buildingFilters.buildingType;;
+              if (this.buildingFilters.buildingType && building.properties.asset_type !==
+                      this.buildingFilters.buildingType) {
+                  return false;
+              }
+console.log(building.properties.building_name.match(new RegExp(this.buildingFilters.buildingName, 'i')));
+
+              if (this.buildingFilters.buildingName && building.properties.building_name.match(new
+                          RegExp(this.buildingFilters.buildingName, 'i')) === null) {
+                  return false;
+              }
+
+              return true;
             });
-          }
+          //}
+
           this._setBuildingList(rawBuildings);
 
-        }, 500);
+        }, 1000);
       },
     });
   </script>
