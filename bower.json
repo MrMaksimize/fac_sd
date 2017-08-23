@@ -22,7 +22,8 @@
     "px-map-gl": "git://github.com/mrmaksimize/px-map-gl#master",
     "iron-ajax": "^2.0.5",
     "paper-dialog": "^2.0.0",
-    "paper-button": "^2.0.0"
+    "paper-button": "^2.0.0",
+    "webcomponentsjs": "^1.0.8"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"
@@ -34,6 +35,7 @@
     "lodash": "^4.17.4",
     "iron-resizable-behavior": "^1.0.0",
     "iron-icon": "^1.0.0",
-    "iron-a11y-keys-behavior": "1 - 2"
+    "iron-a11y-keys-behavior": "1 - 2",
+    "webcomponentsjs": "^0.7.24"
   }
 }
