@@ -30,7 +30,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         tail="{{subroute}}"></app-route>
 
 
-    <template is="dom-repeat" items="{{ buildingList }}" initial-count="10">
+    <template id="resultList" is="dom-repeat" items="{{ buildingList }}" initial-count="10">
         <div class="card">
             <fsd-building-detail-view building-item="[[ item ]]"></fsd-building-detail-view>
         </div>
@@ -89,8 +89,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         '_routeDataChanged(routeData.*)',
         '_modalBuildingChanged(modalBuilding.*)'
       ],
+      filterBuilding(building) {
+        console.log(building);
+        console.log(this.buildingFilters);
+        // Assume true, filter out.
+        const isResult = true;
+
+        if (this.buildingFilters.buildingType && building.properties.asset_type !== this.buildingFilters.buildingType)
+          return false;
+
+        return isResult;
+      },
       _routeDataChanged(routeDataDelta) {
-        console.log(routeDataDelta);
         if (routeDataDelta.value.buildingId) {
           this.debounce('showModal', () => {
             this.set('activeBuildingId', this.routeData.buildingId);
@@ -124,13 +134,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               this.set('modalBuilding', null);
           }
       },
-      _buildingDataUpdated: function(processedBuildingsChange, buildingFiltersChange) {
+      _buildingDataUpdated: function(processedBuildingsDelta, buildingFiltersDelta) {
         this.debounce('processBuildings', () => {
-            console.log(processedBuildingsChange);
-            console.log(buildingFiltersChange);
-            this._setBuildingList(processedBuildingsChange.value.features);
-            console.log(processedBuildingsChange.value.features);
-        }, 1000);
+          console.log('bf');
+          console.log('bd');
+
+          var rawBuildings = this.processedBuildings.features;
+          if (this.buildingFilters.buildingType) {
+            rawBuildings = _.filter(rawBuildings, (building) => {
+              return building.properties.asset_type === this.buildingFilters.buildingType;;
+            });
+          }
+          this._setBuildingList(rawBuildings);
+
+        }, 500);
       },
     });
   </script>
