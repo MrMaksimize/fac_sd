@@ -38,7 +38,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --app-drawer-width: 300px;
         --app-drawer-content-container: {
           background: var(--app-primary-color);
-          padding-top: 170px;
+          padding-top: 150px;
         }
 
         display: block;
@@ -51,6 +51,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       app-header paper-icon-button {
         --paper-icon-button-ink-color: white;
+      }
+
+      app-toolbar {
+        overflow: hidden;
+        height: 160px;
       }
 
       #nav-map {
@@ -80,6 +85,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       px-dropdown {
         width: 100%;
       }
+      #fsd-main-nav a.main-nav-link {
+        color: white;
+      }
+
+      #panda-footer {
+        background:black;
+        width: 100%;
+        position: fixed;
+        color:white;
+        bottom: 0;
+      }
     </style>
 
     <app-location route="{{route}}"></app-location>
@@ -105,15 +121,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 style="mapbox://styles/mapbox/streets-v9"
                 mgl-token="pk.eyJ1IjoiYXZlZHkiLCJhIjoiY2l2NDQ1bG9oMDA0aDJ0cWx4ZW50aTJkbiJ9.WPiw3lvIkzQcABAfJj2MBQ"
                 lat="32.7157"
-                lng="-117.1611">
+                lng="-117.1611">-->
 
-        </px-map-gl>-->
 
-        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="fsd-buildings" href="/fsd-buildings">Building Map</a>
+            <px-map-gl-source-geojson
+              id="councilDistricts"
+              data="{{ councilDistricts }}">
+            </px-map-gl-source-geojson>
 
-          <a name="fsd-list" href="/fsd-list">Building List</a>
-          <!--<a name="view3" href="/view3">View Three</a>-->
+
+        </px-map-gl>
+
+        <iron-selector id="fsd-main-nav" selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+          <a name="fsd-buildings" class="main-nav-link" href="/fsd-buildings">Building Map</a>
+          <a name="fsd-list" class="main-nav-link" href="/fsd-list">Building List</a>
         </iron-selector>
         <div id="filter-container">
             <px-dropdown
@@ -162,6 +183,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <fsd-404  name="fsd-404"></fsd-404>
         </iron-pages>
       </app-header-layout>
+
+    <footer id="panda-footer">
+      Sticky footer?
+    </footer>
+
     </app-drawer-layout>
 
     <iron-ajax
@@ -172,6 +198,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         debounce-duration="300"
         auto verbose>
     </iron-ajax>
+
+    <!-- TODO -- these only work locally.  Need to fix source updates for them to work remotely -->
+    <!--<iron-ajax
+        id="ajax"
+        url="/src/council_districts_datasd.geojson"
+        last-response="{{ councilDistricts }}"
+        handle-as="json"
+        debounce-duration="300"
+        auto verbose>
+    </iron-ajax>-->
 
   </template>
 
@@ -190,6 +226,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	  type: Object,
           observer: '_processRawBuildingsJSON'
 	},
+        councilDistricts: {
+          type: Object,
+          observer: '_processCouncilDistrictsJSON'
+        },
         // Type options for dropdown.
         buildingTypeOptions: {
           type: Array,
@@ -212,9 +252,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           value: function() {
               return {}
           }
-        },
-
-
+        }
       },
 
       observers: [
@@ -236,6 +274,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _showPage404: function() {
         this.page = 'fsd-404';
+      },
+
+      _processCouncilDistrictsJSON: function(raw) {
+          console.log(raw);
       },
 
       _processRawBuildingsJSON: function(raw) {
@@ -319,7 +361,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	  return feature;
         });
 
-        raw.features = raw.features.slice(0, 10);
+        //raw.features = raw.features.slice(0, 10);
         console.log(raw);
         console.log(_.values(buildingTypes));
         this._setProcessedBuildings(raw);

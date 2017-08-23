@@ -148,10 +148,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                       this.buildingFilters.buildingType) {
                   return false;
               }
-console.log(building.properties.building_name.match(new RegExp(this.buildingFilters.buildingName, 'i')));
+//console.log(building.properties.building_name.match(new RegExp(this.buildingFilters.buildingName, 'i')));
 
-              if (this.buildingFilters.buildingName && building.properties.building_name.match(new
-                          RegExp(this.buildingFilters.buildingName, 'i')) === null) {
+              if (this.buildingFilters.buildingName &&
+                      building.properties.building_name.match(new RegExp(this.buildingFilters.buildingName, 'i')) === null) {
                   return false;
               }
 
