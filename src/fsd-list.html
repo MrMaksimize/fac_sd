@@ -11,7 +11,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html" />
 <link rel="import" href="../bower_components/paper-button/paper-button.html" />
-<link rel="import" href="fsd-building-detail-view.html">
+<!--<link rel="import" href="fsd-building-detail-view.html">-->
+<link rel="import" href="fsd-building-detail-view-card.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="fsd-icons.html">
 <link rel="import" href="shared-styles.html">
@@ -35,18 +36,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <div id="result-container" class="col12 clearflix">
         <template id="resultList" is="dom-repeat" items="{{ buildingList }}" initial-count="10">
-            <div class="card">
-                <fsd-building-detail-view building-item="[[ item ]]"></fsd-building-detail-view>
-            </div>
+            <!--<div class="card">-->
+            <fsd-building-detail-view-card id$="building-[[ item.properties.building_number ]]"  building-item="[[ item ]]"></fsd-building-detail-view-card>
+            <!--</div>-->
         </template> <!-- dom-repeat -->
     </div>
 
-    <paper-dialog id="building-detail-modal" modal on-iron-overlay-opened="patchOverlay">
+    <!--<paper-dialog id="building-detail-modal" modal on-iron-overlay-opened="patchOverlay">
             <div class="buttons">
                 <paper-icon-button dialog-confirm icon="fsd-icons:close"></paper-icon-button>
             </div>
         <fsd-building-detail-view building-item="[[ modalBuilding ]]" expanded></fsd-building-detail-view>
-    </paper-dialog>
+    </paper-dialog>-->
 
       </template>
 
@@ -107,22 +108,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
       _routeDataChanged(routeDataDelta) {
         if (routeDataDelta.value.buildingId) {
-          this.debounce('showModal', () => {
+          this.debounce('showModal', function(){
+            console.log('set active building');
             this.set('activeBuildingId', this.routeData.buildingId);
-          }, 1000);
-        }
-      },
-
-      patchOverlay: function (e) {
-        if (e.target.withBackdrop) {
-          e.target.parentNode.insertBefore(e.target.backdropElement, e.target);
+          }, 5000);
         }
       },
 
       _modalBuildingChanged: function(modalBuildingDelta) {
         console.log(modalBuildingDelta);
-        if (modalBuildingDelta.value)
-          Polymer.dom(this.root).querySelector('#building-detail-modal').open();
+        if (modalBuildingDelta.value) {
+          console.log(Polymer.dom(this.root).querySelector('#building-' +
+                      modalBuildingDelta.value.properties.building_number.toString()));
+        }
       },
       _activeBuildingIdChanged: function(newVal, oldVal) {
         console.log(newVal);
@@ -133,10 +131,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             const modalBuildingIndex = _.findIndex(this.processedBuildings.features, function(buildingFeature) {
                 return buildingFeature.properties.building_number == newVal;
             });
-            if (modalBuildingIndex !== -1)
+            if (modalBuildingIndex !== -1) {
+              console.log('set modal building');
               this.set('modalBuilding', this.processedBuildings.features[modalBuildingIndex]);
-            else
+            }
+            else {
+              console.log('no set modal building');
               this.set('modalBuilding', null);
+            }
           }
       },
       _buildingDataUpdated: function(processedBuildingsDelta, buildingFiltersDelta) {
@@ -147,13 +149,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           console.log(this.buildingFilters);
           var rawBuildings = this.processedBuildings.features;
             rawBuildings = _.filter(rawBuildings, (building) => {
-              if (this.buildingFilters.buildingType && building.properties.asset_type !==
+              if (this.buildingFilters.buildingType &&
+                      building.properties.asset_type !==
                       this.buildingFilters.buildingType) {
                   return false;
               }
 
               if (this.buildingFilters.buildingName &&
-                      building.properties.building_name.toString().match(new RegExp(this.buildingFilters.buildingName, 'i')) === null) {
+                      building.properties.building_name.toString()
+                      .match(new RegExp(this.buildingFilters.buildingName, 'i')) === null) {
                   return false;
               }
 

@@ -90,11 +90,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       #panda-footer {
-        background:black;
-        width: 100%;
+        background:#e0e1dd;
         position: fixed;
-        color:white;
+        color:black;
         bottom: 0;
+        padding:5px;
+        text-align: center;
       }
     </style>
 
@@ -184,11 +185,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </iron-pages>
       </app-header-layout>
 
-    <footer id="panda-footer">
-      Buildings. YAY.
+    </app-drawer-layout>
+
+    <footer id="panda-footer" class="col12">
+        Underlying data available at <a href="https://data.sandiego.gov" target="_blank"
+                                                                         title="DataSD">DataSD</a>
     </footer>
 
-    </app-drawer-layout>
 
     <iron-ajax
         id="ajax"
@@ -358,7 +361,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	  return feature;
         });
 
-        //raw.features = raw.features.slice(0, 10);
+        raw.features = raw.features.slice(0, 10);
         console.log(raw);
         console.log(_.values(buildingTypes));
         this._setProcessedBuildings(raw);
