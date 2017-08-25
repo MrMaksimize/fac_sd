@@ -27,6 +27,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       paper-card{
         margin-bottom: 30px;
       }
+
     </style>
 
          <paper-card class="col10 pad1 margin1"
@@ -70,8 +71,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 on-click="_toggle"
                 style="float:right;">
             </paper-icon-button>
-    <paper-icon-button icon="favorite"></paper-icon-button>
-    <paper-icon-button icon="bookmark"></paper-icon-button>
+            <a href="/fsd-detail/[[ buildingItem.properties.building_number ]]">
+              <paper-icon-button icon="zoom-in"></paper-icon-button>
+            </a>
+            <a href="/fsd-detail/[[ buildingItem.properties.building_number ]]">
+                <paper-icon-button icon="print"></paper-icon-button>
+            </a>
 
             <iron-collapse id="more-info" style="width:100%;">
                 <div class="col12 cleafix">
@@ -129,15 +134,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.set('expanded', !this.expanded);
       },
       _handleExpandedChanged: function(newVal, oldVal) {
-        if (oldVal !== undefined) {
-            console.log(newVal);
-            console.log(oldVal);
-            const moreInfo = Polymer.dom(this.root).querySelector('#more-info');
-            console.log(moreInfo);
-            const iconButton = Polymer.dom(this.root).querySelector('#moreInfoIcon');
-            iconButton.icon = moreInfo.opened ? 'expand-more': 'expand-less';
-            moreInfo.toggle();
-        }
+        const moreInfo = Polymer.dom(this.root).querySelector('#more-info');
+        const iconButton = Polymer.dom(this.root).querySelector('#moreInfoIcon');
+        iconButton.icon = moreInfo.opened ? 'expand-more': 'expand-less';
+        moreInfo.toggle();
       },
       observers: [
       ],

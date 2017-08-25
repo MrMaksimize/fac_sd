@@ -33,6 +33,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <div id="result-container" class="col12 clearflix">
         <fsd-building-detail-view-card
             id$="building-[[ activeBuilding.properties.building_number ]]"
+            class="print-info"
             building-item="[[ activeBuilding ]]"
             expanded></fsd-building-detail-view-card>
     </div>
@@ -60,6 +61,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         activeBuilding: {
           type: Object
         },
+        print: {
+          type: Boolean,
+          value: false
+        }
+
       },
       observers: [
       ],
@@ -68,7 +74,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.set('activeBuildingId', this.routeData.buildingId);
       },
       _selectActiveBuilding: function(newVal, oldVal) {
-        if (this.routeData.buildingId && this.processedBuildings) {
+        if (this.routeData && this.routeData.buildingId && this.processedBuildings) {
           const activeBuildingIndex = _.findIndex(
                   this.processedBuildings.features, (buildingFeature) => {
               return buildingFeature.properties.building_number == this.routeData.buildingId;
@@ -77,6 +83,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if (activeBuildingIndex !== -1) {
               console.log('set modal building');
               this.set('activeBuilding', this.processedBuildings.features[activeBuildingIndex]);
+              if (this.subroute.__queryParams.print === "true") {
+                  console.log('p');
+                  this.set('print', true);
+              }
             }
             else {
               console.log('no set modal building');
