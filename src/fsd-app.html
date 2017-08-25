@@ -179,8 +179,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </fsd-buildings>
           <fsd-list name="fsd-list"
                     processed-buildings="[[ processedBuildings ]]"
-                    building-filters="[[ buildingFilters ]]"
-                    route="{{ subroute }}"></fsd-list>
+                    building-filters="[[ buildingFilters ]]"></fsd-list>
+
+          <fsd-detail name="fsd-detail"
+                    processed-buildings="[[ processedBuildings ]]"
+                    route="{{ subroute }}"></fsd-detail>
+
           <fsd-404  name="fsd-404"></fsd-404>
         </iron-pages>
       </app-header-layout>

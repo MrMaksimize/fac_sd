@@ -24,12 +24,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           margin-bottom: 8px;
         }
       }
+      paper-card{
+        margin-bottom: 30px;
+      }
     </style>
 
          <paper-card class="col10 pad1 margin1"
              heading="[[ buildingItem.properties.building_name ]]"
              image="http://placehold.it/350x75/FFC107/000000"
-             alt="[[ buildingItem.properties.building_name]]" class="white">
+             alt="[[ buildingItem.properties.building_name]]"
+             preload-image
+             fade-image
+             placeholder-image="http://placehold.it/350x75/FFC107/000000"
+             class="white building-detail">
         <div class="card-content">
           <div id="building-details" class="col12 clearfix">
             <div class="col4">
@@ -54,7 +61,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </ul>
             </div> <!-- right-col -->
           </div> <!-- col-wrap -->
-        </div>
+        </div> <!-- card-content -->
         <div class="card-actions">
              <paper-icon-button
                 id="moreInfoIcon"
@@ -63,6 +70,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 on-click="_toggle"
                 style="float:right;">
             </paper-icon-button>
+    <paper-icon-button icon="favorite"></paper-icon-button>
+    <paper-icon-button icon="bookmark"></paper-icon-button>
 
             <iron-collapse id="more-info" style="width:100%;">
                 <div class="col12 cleafix">
@@ -92,6 +101,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     <p> [[ buildingItem.properties.desc_substructure ]] </p>
                 </div>
             </iron-collapse>
+        </div><!-- card-actions -->
     </paper-card>
   </template>
 

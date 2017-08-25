@@ -14,6 +14,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <!--<link rel="import" href="fsd-building-detail-view.html">-->
 <link rel="import" href="fsd-building-detail-view-card.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
 <link rel="import" href="fsd-icons.html">
 <link rel="import" href="shared-styles.html">
 
@@ -22,34 +23,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <style include="shared-styles">
       :host {
       }
+      .filter-card input {
+          border: 0px;
+          font-size: 25px;
+      }
+      .filter-card {
+          margin-bottom: 30px;
+      }
     </style>
 
-    <app-route
-        route="{{route}}"
-        pattern="/:buildingId"
-        data="{{routeData}}"
-        tail="{{subroute}}"></app-route>
+
 
     <div class="filter-card clearfix col12">
-      <input value="{{buildingFilters.buildingName::input}}" class="pad1 col10 margin1" placeholder="filter">
+       <paper-card class="col10 pad1 margin1" class="white">
+           <input value="{{buildingFilters.buildingName::input}}" class="pad1 col10 margin1" placeholder="filter">
+       </paper-card>
+
     </div>
 
     <div id="result-container" class="col12 clearflix">
         <template id="resultList" is="dom-repeat" items="{{ buildingList }}" initial-count="10">
             <!--<div class="card">-->
-            <fsd-building-detail-view-card id$="building-[[ item.properties.building_number ]]"  building-item="[[ item ]]"></fsd-building-detail-view-card>
+            <fsd-building-detail-view-card
+                id$="building-[[ item.properties.building_number ]]"
+                building-item="[[ item ]]"></fsd-building-detail-view-card>
             <!--</div>-->
         </template> <!-- dom-repeat -->
     </div>
 
-    <!--<paper-dialog id="building-detail-modal" modal on-iron-overlay-opened="patchOverlay">
-            <div class="buttons">
-                <paper-icon-button dialog-confirm icon="fsd-icons:close"></paper-icon-button>
-            </div>
-        <fsd-building-detail-view building-item="[[ modalBuilding ]]" expanded></fsd-building-detail-view>
-    </paper-dialog>-->
-
-      </template>
+    </template>
 
 
  <script>
@@ -72,28 +74,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             return [];
           }
         },
-        modalBuilding: {
-          type: Object,
-          notify: true
-        },
         // Prcessed bldg data coming from fsd-app.
         processedBuildings: {
           type: Object,
           notify: true
         },
-        routeData: {
-          type: Object,
-          notify: true
-        },
-        activeBuildingId: {
-          type: String,
-          observer: '_activeBuildingIdChanged'
-        },
       },
       observers: [
         '_buildingDataUpdated(processedBuildings.*, buildingFilters.*)',
-        '_routeDataChanged(routeData.*)',
-        '_modalBuildingChanged(modalBuilding.*)'
       ],
       filterBuilding(building) {
         console.log(building);
@@ -105,41 +93,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           return false;
 
         return isResult;
-      },
-      _routeDataChanged(routeDataDelta) {
-        if (routeDataDelta.value.buildingId) {
-          this.debounce('showModal', function(){
-            console.log('set active building');
-            this.set('activeBuildingId', this.routeData.buildingId);
-          }, 5000);
-        }
-      },
-
-      _modalBuildingChanged: function(modalBuildingDelta) {
-        console.log(modalBuildingDelta);
-        if (modalBuildingDelta.value) {
-          console.log(Polymer.dom(this.root).querySelector('#building-' +
-                      modalBuildingDelta.value.properties.building_number.toString()));
-        }
-      },
-      _activeBuildingIdChanged: function(newVal, oldVal) {
-        console.log(newVal);
-        console.log(oldVal);
-        console.log(Polymer.dom(this.root).querySelector('#building-detail-modal'));
-        console.log(this.processedBuildings);
-          if (this.processedBuildings) {
-            const modalBuildingIndex = _.findIndex(this.processedBuildings.features, function(buildingFeature) {
-                return buildingFeature.properties.building_number == newVal;
-            });
-            if (modalBuildingIndex !== -1) {
-              console.log('set modal building');
-              this.set('modalBuilding', this.processedBuildings.features[modalBuildingIndex]);
-            }
-            else {
-              console.log('no set modal building');
-              this.set('modalBuilding', null);
-            }
-          }
       },
       _buildingDataUpdated: function(processedBuildingsDelta, buildingFiltersDelta) {
         this.debounce('processBuildings', () => {
