@@ -24,21 +24,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           margin-bottom: 8px;
         }
       }
-      paper-card{
+      paper-card {
         margin-bottom: 30px;
+      }
+      --paper-card-header-text {
+        color: red;
       }
 
     </style>
 
-         <paper-card class="col10 pad1 margin1"
+      <paper-card class="col10 pad1 margin1"
              heading="[[ buildingItem.properties.building_name ]]"
-             image="http://placehold.it/350x75/FFC107/000000"
+             image="[[ locImg ]]"
              alt="[[ buildingItem.properties.building_name]]"
              preload-image
              fade-image
-             placeholder-image="http://placehold.it/350x75/FFC107/000000"
+             placeholder-image="http://placehold.it/350x100/FFC107/000000"
              class="white building-detail">
-        <div class="card-content">
+
+       <div class="card-content">
+
           <div id="building-details" class="col12 clearfix">
             <div class="col4">
             <ul>
@@ -64,9 +69,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </div> <!-- col-wrap -->
         </div> <!-- card-content -->
         <div class="card-actions">
+          <template is="dom-if" if="{{ !compact }}">
              <paper-icon-button
                 id="moreInfoIcon"
-                icon="expand-more"
+                icon="[[_getExpandIcon(expanded)]]"
                 title="more info"
                 on-click="_toggle"
                 style="float:right;">
@@ -74,9 +80,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <a href="/fsd-detail/[[ buildingItem.properties.building_number ]]">
               <paper-icon-button icon="zoom-in"></paper-icon-button>
             </a>
-            <a href="/fsd-detail/[[ buildingItem.properties.building_number ]]">
+            <a href="/fsd-detail/[[ buildingItem.properties.building_number ]]?print=true">
                 <paper-icon-button icon="print"></paper-icon-button>
             </a>
+          </template>
 
             <iron-collapse id="more-info" style="width:100%;">
                 <div class="col12 cleafix">
@@ -119,25 +126,58 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       properties: {
         buildingItem: {
           type: Object,
-          notify: true
+          notify: true,
+          observer: '_buildingItemChanged'
         },
         expanded: {
           type: Boolean,
           value: false,
           observer: '_handleExpandedChanged'
-        }
+        },
+        compact: {
+          type: Boolean,
+          value: false
+        },
+        locImage: String
+
       },
       attached: function() {
           console.log('attached');
+          if (this.compact) {
+              const paperCard = Polymer.dom(this.root).querySelector('paper-card');
+              paperCard.classList.remove('col10', 'pad1', 'margin1');
+              paperCard.classList.add('col12');
+          }
+      },
+      _buildingItemChanged: function(oldVal, newVal) {
+        if (this.buildingItem.properties.building_number) {
+          console.log(this.buildingItem.properties);
+          var locImg =
+              'https://maps.googleapis.com/maps/api/streetview?key=AIzaSyCIoGPIBT0kZBZY7xnXyWNRh3jM8thWB9Y&fov=120';
+          const size = '350x100'
+          const loc = this.buildingItem.properties.latitude
+            + ','
+            + this.buildingItem.properties.longitude;
+          //const loc = this.buildingItem.properties.address_1 + ' ' + this.buildingItem.properties.zip
+          locImg = locImg + '&size=' + size;
+          locImg = locImg + '&location=' + loc;
+          //var locImg = 'https://maps.googleapis.com/maps/api/streetview?size=350x100&location=40.720032,-73.988354&fov=90&heading=235&pitch=10&key=AIzaSyCIoGPIBT0kZBZY7xnXyWNRh3jM8thWB9Y';
+          console.log(encodeURI(locImg));
+          this.set('locImg', locImg);
+        }
       },
       _toggle: function(e) {
+        console.log('toggle');
         this.set('expanded', !this.expanded);
+      },
+      _getExpandIcon: function() {
+        return this.expanded === false ? 'expand-more': 'expand-less';
       },
       _handleExpandedChanged: function(newVal, oldVal) {
         const moreInfo = Polymer.dom(this.root).querySelector('#more-info');
-        const iconButton = Polymer.dom(this.root).querySelector('#moreInfoIcon');
-        iconButton.icon = moreInfo.opened ? 'expand-more': 'expand-less';
-        moreInfo.toggle();
+        console.log('set exp');
+        console.log(this.expanded);
+        this.expanded === true ? moreInfo.show() : moreInfo.hide();
       },
       observers: [
       ],

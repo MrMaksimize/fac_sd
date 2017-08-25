@@ -21,7 +21,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/px-map-gl/px-map-gl-control-geolocate.html" />
 <link rel="import" href="../bower_components/px-map-gl/px-map-gl-control-scale.html" />
 <link rel="import" href="../bower_components/px-map-gl/px-map-gl-control-fullscreen.html" />
-<link rel="import" href="fsd-building-detail-view.html">
+<link rel="import" href="fsd-building-detail-view-card.html">
 <link rel="import" href="shared-styles.html">
 
 <!-- Predix UI Components -->
@@ -60,7 +60,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         bottom: 0px;
         background: white;
         opacity: 0.9;
-        padding-left: 5px;
       }
       #map-card {
         height: 100%;
@@ -153,7 +152,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </div>
     <div id="building-info-card" style="">
         <template is="dom-if" if="{{ buildingInfo.properties.building_name }}">
-            <fsd-building-detail-view building-item="[[ buildingInfo ]]"></fsd-building-detail-view>
+            <fsd-building-detail-view-card compact building-item="[[ buildingInfo ]]"></fsd-building-detail-view-card>
         </template>
       <template is="dom-if" if="{{ !buildingInfo.properties.building_name }}">
           <h1> Click on a building to see more info. </h1>

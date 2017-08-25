@@ -83,7 +83,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if (activeBuildingIndex !== -1) {
               console.log('set modal building');
               this.set('activeBuilding', this.processedBuildings.features[activeBuildingIndex]);
-              if (this.subroute.__queryParams.print === "true") {
+              if (this.subroute && this.subroute.__queryParams.print === "true") {
                   console.log('p');
                   this.set('print', true);
               }
