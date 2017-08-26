@@ -20,6 +20,9 @@
     "bower_components/font-awesome/fonts/**",
     "bower_components/lodash/dist/lodash.min.js"
   ],
+  "lint": {
+    "rules": ["polymer-2-hybrid"]
+  },
   "builds": [
     {
       "preset": "es5-bundled"

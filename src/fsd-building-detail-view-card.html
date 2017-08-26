@@ -85,10 +85,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 on-click="_toggle"
                 style="float:right;">
             </paper-icon-button>
-            <a href="/fsd-detail/[[ buildingItem.properties.building_number ]]">
+            <a href="/#/fsd-detail/[[ buildingItem.properties.building_number ]]">
               <paper-icon-button icon="zoom-in"></paper-icon-button>
             </a>
-            <a href="/fsd-detail/[[ buildingItem.properties.building_number ]]?print=true">
+            <a href="/#/fsd-detail/[[ buildingItem.properties.building_number ]]?print=true">
                 <paper-icon-button icon="print"></paper-icon-button>
             </a>
           </template>
@@ -146,7 +146,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: Boolean,
           value: false
         },
-        locImage: String
+        locImg: String
 
       },
       attached: function() {
