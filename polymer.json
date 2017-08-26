@@ -2,8 +2,11 @@
   "entrypoint": "index.html",
   "shell": "src/fsd-app.html",
   "fragments": [
+    "src/fsd-building-detail-view-card.html",
     "src/fsd-buildings.html",
+    "src/fsd-detail.html",
     "src/fsd-icons.html",
+    "src/fsd-list.html",
     "src/fsd-404.html"
   ],
   "sources": [
@@ -16,5 +19,16 @@
     "bower_components/webcomponentsjs/webcomponents-lite.min.js",
     "bower_components/font-awesome/fonts/**",
     "bower_components/lodash/dist/lodash.min.js"
+  ],
+  "builds": [
+    {
+      "preset": "es5-bundled"
+    },
+    {
+      "preset": "es6-unbundled"
+    },
+    {
+      "preset": "es6-bundled"
+    }
   ]
 }
