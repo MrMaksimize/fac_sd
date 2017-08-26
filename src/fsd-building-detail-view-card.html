@@ -23,11 +23,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           margin-top: 8px;
           margin-bottom: 8px;
         }
-        --paper-card-header-image: {
-            opacity: 0.5 !important;
-            background: white !important;
-        }
-        --paper-card-header-image-text: {
+         --paper-card-header-image-text: {
             font-weight: bold;
             font-size: 30px;
             background: white;
@@ -35,6 +31,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       paper-card {
         margin-bottom: 30px;
+
+        --paper-card-header-image: {
+            opacity: 0.5;
+            background: white;
+             /* How to put max-height here for when google maps responds with bad response*/
+        }
       }
 
 
@@ -47,7 +49,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
              alt="[[ buildingItem.properties.building_name]]"
              preload-image
              fade-image
-             placeholder-image="http://placehold.it/350x100/FFC107/000000"
+             placeholder-image="/images/datasd_wp_640.jpg"
              class="white building-detail">
 
        <div class="card-content">
