@@ -105,9 +105,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           console.log(this.buildingFilters);
           var rawBuildings = this.processedBuildings.features;
             rawBuildings = _.filter(rawBuildings, (building) => {
+              // Apply filters.
               if (this.buildingFilters.buildingType &&
                       building.properties.asset_type !==
                       this.buildingFilters.buildingType) {
+                  return false;
+              }
+
+              if (this.buildingFilters.conditions &&
+                      building.properties.condition !==
+                      this.buildingFilters.conditions) {
                   return false;
               }
 

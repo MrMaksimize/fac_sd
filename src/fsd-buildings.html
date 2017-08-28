@@ -208,10 +208,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: Object,
           value: function() {
             return {
-              'buildingLayer': null
+              'buildingLayer': ["all"]
             }
           },
           notify: true,
+          readOnly: true
+        },
+        metaFilters: {
+          type: Object,
+          value: function() {
+              return {
+                  'buildingLayer' : {
+                      'buildingType': null,
+                      'condition': null
+                  }
+              }
+          },
+          notify: false,
           readOnly: true
         }
       },
@@ -226,21 +239,46 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
       // App filters changed.
       _buildingFiltersUpdated: function(changeData) {
-        console.log(changeData);
-        currentFilters = this.filters;
+        const newFilters = this.getPropertyInfo('filters').value();
+        console.log(newFilters);
+        const currentMetaFilters = this.metaFilters;
         const newVal = changeData.value;
         const path = changeData.path;
 
-        if (newVal === null || typeof newVal !== "string")
-          currentFilters.buildingLayer = null
-        else {
-          if (path === "buildingFilters.buildingType") {
-            currentFilters.buildingLayer = ["in", "asset_type", newVal];
-          }
+        // Construct metafilters, then generate filters.
+        // Building type = first filter.
+        if (path === 'buildingFilters.buildingType') {
+            if (newVal === null || typeof newVal !== "string")
+                currentMetaFilters.buildingLayer.buildingType = null
+            else
+                currentMetaFilters.buildingLayer.buildingType = ["in", "asset_type", newVal];
         }
 
-        this._setFilters(currentFilters);
-        this.notifyPath('filters.buildingLayer');
+
+        if (path === 'buildingFilters.conditions') {
+            if (newVal === null || typeof newVal !== "string")
+                currentMetaFilters.buildingLayer.conditions = null
+            else
+                currentMetaFilters.buildingLayer.conditions = ["in", "condition", newVal];
+        }
+
+        // Construct filters.
+        for (var layerFilterId in currentMetaFilters) {
+            for (var filterDef in currentMetaFilters[layerFilterId]) {
+                if (currentMetaFilters[layerFilterId][filterDef] !== null) {
+                    newFilters[layerFilterId].push(currentMetaFilters[layerFilterId][filterDef])
+                }
+            }
+        }
+
+        // Set metafilters for storage.
+        this._setMetaFilters(currentMetaFilters);
+
+
+
+        // Set new filters.
+        this._setFilters(newFilters);
+        this.notifyPath('filters.*');
       }
     });
   </script>

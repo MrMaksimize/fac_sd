@@ -129,6 +129,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 display-value="Building Type"
                 selected="{{ buildingFilters.buildingType }}">
             </px-dropdown>
+
+
+            <px-dropdown
+                id='building-condition'
+                items='[[ availableOptions.conditions ]]'
+                sort-mode="key"
+                button-style="tertiary"
+                display-value="Condition"
+                selected="{{ buildingFilters.conditions }}">
+            </px-dropdown>
         </div><!-- filter container-->
 
         <!--<px-toggle
@@ -337,34 +347,46 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	    "Dump Station": "recycling",
 	    "Leased Facility": "building"
 	};
-        const buildingTypes = {};
+        const optionsBucket = {
+            'buildingTypes': [],
+            'conditions': []
+        };
 
         raw.features = _.map(raw.features, function(feature) {
           let buildingType = feature.properties.asset_type;
-          let commArea = feature.properties.community_area;
-          let councilDistrict = feature.properties.council_district;
+          //let commArea = feature.properties.community_area;
+          //let councilDistrict = feature.properties.council_district;
           let condition = feature.properties.condition;
 
           feature.properties.icon = iconMap[buildingType]
 
-          if (!buildingTypes[buildingType]) {
-              buildingTypes[buildingType] = {
+          if (!optionsBucket.buildingTypes[buildingType]) {
+              optionsBucket.buildingTypes[buildingType] = {
                 'key': buildingType,
                 'val': buildingType
               }
           }
+
+          if (!optionsBucket.conditions[condition]) {
+              optionsBucket.conditions[condition] = {
+                'key': condition,
+                'val': condition
+              }
+          }
+
 	  return feature;
         });
 
         //raw.features = raw.features.slice(0, 10);
         console.log(raw);
         this._setProcessedBuildings(raw);
-        this._setBuildingTypeOptions(_.values(buildingTypes));
 
         var availableOptions = this.availableOptions || {};
-        availableOptions['buildingTypes'] = _.values(buildingTypes);
+        availableOptions['buildingTypes'] = _.values(optionsBucket['buildingTypes']);
+        availableOptions['conditions'] = _.values(optionsBucket['conditions']);
         this._setAvailableOptions(availableOptions);
         this.notifyPath('availableOptions.buildingTypes');
+        this.notifyPath('availableOptions.conditions');
 
       }
     });
