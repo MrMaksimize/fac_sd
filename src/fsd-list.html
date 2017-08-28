@@ -9,12 +9,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html" />
 <link rel="import" href="../bower_components/paper-button/paper-button.html" />
 <!--<link rel="import" href="fsd-building-detail-view.html">-->
 <link rel="import" href="fsd-building-detail-view-card.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
 <link rel="import" href="fsd-icons.html">
 <link rel="import" href="shared-styles.html">
 
@@ -45,13 +45,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </div>
 
     <div id="result-container" class="col12 clearflix">
+        <!--<iron-list id="resultList" items="{{ buildingList }}" as="item" scroll-target="document">-->
         <template id="resultList" is="dom-repeat" items="{{ buildingList }}" initial-count="10">
-            <!--<div class="card">-->
             <fsd-building-detail-view-card
                 id$="building-[[ item.properties.building_number ]]"
                 building-item="[[ item ]]"></fsd-building-detail-view-card>
-            <!--</div>-->
-        </template> <!-- dom-repeat -->
+            </template> <!-- dom-repeat -->
+        </iron-list>
     </div>
 
     </template>
@@ -115,6 +115,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               if (this.buildingFilters.conditions &&
                       building.properties.condition !==
                       this.buildingFilters.conditions) {
+                  return false;
+              }
+
+              if (this.buildingFilters.commAreas &&
+                      building.properties.community_area !==
+                      this.buildingFilters.commAreas) {
+                  return false;
+              }
+
+
+              if (this.buildingFilters.councilDistricts &&
+                      building.properties.council_district !==
+                      this.buildingFilters.councilDistricts) {
                   return false;
               }
 
