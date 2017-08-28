@@ -220,7 +220,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               return {
                   'buildingLayer' : {
                       'buildingType': null,
-                      'condition': null
+                      'condition': null,
+                      'commArea': null,
+                      'councilDistrict': null
                   }
               }
           },
@@ -260,6 +262,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 currentMetaFilters.buildingLayer.conditions = null
             else
                 currentMetaFilters.buildingLayer.conditions = ["in", "condition", newVal];
+        }
+
+
+
+        if (path === 'buildingFilters.commAreas') {
+            if (newVal === null || typeof newVal !== "string")
+                currentMetaFilters.buildingLayer.conditions = null
+            else
+                currentMetaFilters.buildingLayer.conditions = ["in", "community_area", newVal];
+        }
+
+        if (path === 'buildingFilters.councilDistricts') {
+            console.log(newVal);
+            if (newVal === null || typeof newVal !== "number")
+                currentMetaFilters.buildingLayer.conditions = null
+            else
+                currentMetaFilters.buildingLayer.conditions = ["in", "council_district", newVal];
         }
 
         // Construct filters.

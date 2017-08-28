@@ -139,12 +139,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 display-value="Condition"
                 selected="{{ buildingFilters.conditions }}">
             </px-dropdown>
+
+            <px-dropdown
+                id='building-comm-area'
+                items='[[ availableOptions.commAreas]]'
+                sort-mode="key"
+                button-style="tertiary"
+                display-value="Community Area"
+                selected="{{ buildingFilters.commAreas }}">
+            </px-dropdown>
+
+            <px-dropdown
+                id='building-council-district'
+                items='[[ availableOptions.councilDistricts ]]'
+                sort-mode="key"
+                button-style="tertiary"
+                display-value="Council District"
+                selected="{{ buildingFilters.councilDistricts }}">
+            </px-dropdown>
         </div><!-- filter container-->
-
-        <!--<px-toggle
-            selected="d2"
-            items='[{"key":"d2", "val": "2d"},{"key":"d3", "val":"3d"}]'></px-toggle>-->
-
 
 
 
@@ -349,29 +362,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	};
         const optionsBucket = {
             'buildingTypes': [],
-            'conditions': []
+            'conditions': [],
+            'commAreas': [],
+            'councilDistricts': []
         };
 
         raw.features = _.map(raw.features, function(feature) {
           let buildingType = feature.properties.asset_type;
-          //let commArea = feature.properties.community_area;
-          //let councilDistrict = feature.properties.council_district;
+          let commArea = feature.properties.community_area;
+          let councilDistrict = feature.properties.council_district;
           let condition = feature.properties.condition;
 
-          feature.properties.icon = iconMap[buildingType]
-
-          if (!optionsBucket.buildingTypes[buildingType]) {
-              optionsBucket.buildingTypes[buildingType] = {
-                'key': buildingType,
-                'val': buildingType
-              }
+          let optionsMap = {
+              'buildingType': feature.properties.asset_type,
+              'commArea': feature.properties.community_area,
+              'councilDistrict': feature.properties.council_district,
+              'condition': feature.properties.condition
           }
 
-          if (!optionsBucket.conditions[condition]) {
-              optionsBucket.conditions[condition] = {
-                'key': condition,
-                'val': condition
+          feature.properties.icon = iconMap[feature.properties.asset_type]
+
+          for (var opt in optionsMap) {
+            if (!optionsBucket[opt + 's'][optionsMap[opt]]) {
+              optionsBucket[opt + 's'][optionsMap[opt]] = {
+                'key':  optionsMap[opt],
+                'val':  optionsMap[opt]
               }
+            }
           }
 
 	  return feature;
@@ -382,11 +399,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this._setProcessedBuildings(raw);
 
         var availableOptions = this.availableOptions || {};
-        availableOptions['buildingTypes'] = _.values(optionsBucket['buildingTypes']);
-        availableOptions['conditions'] = _.values(optionsBucket['conditions']);
+        for (var opt in optionsBucket) {
+          availableOptions[opt] = _.values(optionsBucket[opt]);
+        }
         this._setAvailableOptions(availableOptions);
-        this.notifyPath('availableOptions.buildingTypes');
-        this.notifyPath('availableOptions.conditions');
+        this.notifyPath('availableOptions.*');
 
       }
     });
