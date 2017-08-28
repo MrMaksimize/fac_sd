@@ -20,8 +20,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <dom-module id="fsd-list">
   <template>
-    <style include="shared-styles">
+    <style include="shared-styles" is="custom-style">
       :host {
+      }
+      #result-container{
+          height: 100vh;
+          display: flex;
+          flex-direction: column;
+      }
+      #resultList {
+          flex: 1 1 auto;
       }
       .filter-card input {
           border: 0px;
@@ -32,6 +40,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       --paper-card-header {
           height: 10px;
+      }
+      .fsd-building-detail-view-card {
+          position: relative;
       }
     </style>
 
@@ -45,13 +56,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </div>
 
     <div id="result-container" class="col12 clearflix">
-        <!--<iron-list id="resultList" items="{{ buildingList }}" as="item" scroll-target="document">-->
-        <template id="resultList" is="dom-repeat" items="{{ buildingList }}" initial-count="10">
+        <iron-list id="resultList" items="{{ buildingList }}" as="item">
+        <!--<template id="resultList" is="dom-repeat" items="{{ buildingList }}" initial-count="10">-->
+            <template>
             <fsd-building-detail-view-card
                 id$="building-[[ item.properties.building_number ]]"
-                building-item="[[ item ]]"></fsd-building-detail-view-card>
+                building-item="[[ item ]]" class="fsd-building-detail-view-card"></fsd-building-detail-view-card>
             </template> <!-- dom-repeat -->
         </iron-list>
+
     </div>
 
     </template>
@@ -85,7 +98,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
       observers: [
         '_buildingDataUpdated(processedBuildings.*, buildingFilters.*)',
+        '_buildingListUpdated(buildingList.*)'
       ],
+      attached: function() {
+        this.listen(this.$.resultList, 'scroll', 'scrolled');
+      },
+      _buildingListUpdated: function(buildingListDelta) {
+         this.$.resultList.fire('scroll');
+      },
       filterBuilding(building) {
         console.log(building);
         console.log(this.buildingFilters);
@@ -96,6 +116,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           return false;
 
         return isResult;
+      },
+      scrolled: function(e) {
+	this.debounce('fireScroll', () => {
+	  this.$.resultList.fire('iron-resize');
+	}, 700);
       },
       _buildingDataUpdated: function(processedBuildingsDelta, buildingFiltersDelta) {
         this.debounce('processBuildings', () => {
@@ -140,6 +165,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               return true;
             });
           //}
+
 
           this._setBuildingList(rawBuildings);
 
