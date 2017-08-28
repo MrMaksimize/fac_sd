@@ -73,6 +73,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       px-map-gl {
       }
 
+      img#dancing-sd-placeholder {
+          float: right;
+          height: 200px;
+      }
+      h1#map-cta-placeholder{
+          float: left;
+      }
+
 
 
 
@@ -159,7 +167,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <fsd-building-detail-view-card compact building-item="[[ buildingInfo ]]"></fsd-building-detail-view-card>
         </template>
       <template is="dom-if" if="{{ !buildingInfo.properties.building_name }}">
-          <h1> Click on a building to see more info. </h1>
+          <h1 id="map-cta-placeholder"> Click on a building to see more info. </h1>
+          <img id="dancing-sd-placeholder" src="/images/dancing_sd.gif" alt="Dancing SD"/>
       </template>
     </div><!-- card -->
 

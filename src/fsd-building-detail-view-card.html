@@ -152,7 +152,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       },
       attached: function() {
-          console.log('attached');
           if (this.compact) {
               const paperCard = Polymer.dom(this.root).querySelector('paper-card');
               paperCard.classList.remove('col10', 'pad1', 'margin1');
@@ -161,7 +160,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
       _buildingItemChanged: function(oldVal, newVal) {
         if (this.buildingItem.properties.building_number) {
-          console.log(this.buildingItem.properties);
           var locImg =
               'https://maps.googleapis.com/maps/api/streetview?key=AIzaSyCIoGPIBT0kZBZY7xnXyWNRh3jM8thWB9Y&fov=120';
           const lat = this.buildingItem.properties.latitude
@@ -199,8 +197,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
       _handleExpandedChanged: function(newVal, oldVal) {
         const moreInfo = Polymer.dom(this.root).querySelector('#more-info');
-        console.log('set exp');
-        console.log(this.expanded);
         this.expanded === true ? moreInfo.show() : moreInfo.hide();
       },
       observers: [
