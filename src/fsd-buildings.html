@@ -254,7 +254,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         '_buildingFiltersUpdated(buildingFilters.*)',
       ],
       _handleLayerClick(e) {
-        if (e.srcElement.id == 'building-layer' && e.detail.event.features[0].properties) {
+        console.log(e.detail.emitter);
+        if (emitterId == 'building-layer' && e.detail.event.features[0].properties) {
           console.log(e.detail.event.features[0]);
           this._setBuildingInfo(e.detail.event.features[0])
         }
