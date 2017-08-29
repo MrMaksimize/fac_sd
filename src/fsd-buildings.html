@@ -22,6 +22,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/px-map-gl/px-map-gl-control-geolocate.html" />
 <link rel="import" href="../bower_components/px-map-gl/px-map-gl-control-scale.html" />
 <link rel="import" href="../bower_components/px-map-gl/px-map-gl-control-fullscreen.html" />
+<link rel="import" href="../bower_components/px-map-gl/px-map-gl-control-attribution.html" />
 <link rel="import" href="fsd-building-detail-view-card.html">
 <link rel="import" href="shared-styles.html">
 
@@ -113,8 +114,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <px-map-gl-layer-symbol
               layout='{
                 "icon-optional" : true,
-		"text-size": 18,
+		"text-size": 24,
 		"text-field": "{iconcode}",
+		"text-allow-overlap": true,
+                "text-line-height": 1,
+                "text-padding": 0,
+                "text-anchor": "bottom",
 	        "text-font": ["FontAwesome Regular"]
               }'
 	      paint='{"text-color": {
@@ -124,6 +129,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               id="building-layer"
               filter="[[ filters.buildingLayer ]]"
               source="fac-buildings">
+            </px-map-gl-layer-symbol>
+
+            <px-map-gl-control-attribution position="top-right">
+            </px-map-gl-control-attribution>
 
 <!--              <px-map-gl-popup-debug
                 show-event="click"
