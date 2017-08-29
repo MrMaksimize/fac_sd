@@ -295,10 +295,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           console.log(raw);
       },
 
+      _getFontAwesomeStringFromClassName: _.memoize((className) => {
+        const element = document.createElement('i');
+        element.className = 'fa ' + className; // font-awesome specific where `className`==="fa-calendar"
+        element.style.display = 'none'; //  or not
+        document.body.appendChild(element);
+        const contentValue = window.getComputedStyle(
+          element, ':before'
+        ).getPropertyValue('content');
+        document.body.removeChild(element);
+        return contentValue;
+      }),
+
+
       _processRawBuildingsJSON: function(raw) {
         const iconMap = {
-	    "Office": "town-hall",
-	    "Public Event Site": "picnic-site",
+	    "Office": "building",
+	    "Public Event Site": "calendar",
 	    "Theatre": "theatre",
 	    "Parking Garage": "parking",
 	    "Concessions": "fast-food",
@@ -367,7 +380,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             'councilDistricts': []
         };
 
-        raw.features = _.map(raw.features, function(feature) {
+        raw.features = _.map(raw.features, (feature) => {
           let buildingType = feature.properties.asset_type;
           let commArea = feature.properties.community_area;
           let councilDistrict = feature.properties.council_district;
@@ -381,6 +394,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
 
           feature.properties.icon = iconMap[feature.properties.asset_type]
+	  feature.properties.iconcode = this._getFontAwesomeStringFromClassName('fa-' + feature.properties.icon)
+
+	  // Fair
+	  var color = 'yellow';
+	  switch(feature.properties.condition.toLowerCase()) {
+	    case 'good':
+	      color = 'blue';
+	      break;
+
+            case 'poor':
+	      color = 'red';
+	      break;
+	  }
+
+          feature.properties.iconcolor = color;
 
           for (var opt in optionsMap) {
             if (!optionsBucket[opt + 's'][optionsMap[opt]]) {
