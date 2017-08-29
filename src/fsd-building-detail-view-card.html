@@ -24,6 +24,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           margin-bottom: 8px;
         }
       }
+      paper-card.compact {
+        margin-bottom: 0px;
+      }
+
       paper-card {
         margin-bottom: 30px;
         --paper-card-header-image-text: {
@@ -38,6 +42,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
              /* How to put max-height here for when google maps responds with bad response*/
         }
       }
+
+      @media only print {
+        #more-info {
+            height: 5000px;
+        }
+        paper-card {
+            height: 5000px;
+        }
+        .card-actions {
+            height: 5000px;
+        }
+      }
+
+
 
 
 
@@ -156,7 +174,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if (this.compact) {
               const paperCard = Polymer.dom(this.root).querySelector('paper-card');
               paperCard.classList.remove('col10', 'pad1', 'margin1');
-              paperCard.classList.add('col12');
+              paperCard.classList.add('col12', 'compact');
           }
       },
       _buildingItemChanged: function(oldVal, newVal) {
